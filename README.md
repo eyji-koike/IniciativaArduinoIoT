@@ -7,13 +7,9 @@ Esse projeto utiliza uma Arduino Uno r3 com modulos: WiFi esp8266, GPS e dois bo
 
 
 ## Flow Charts
-```flow
-st=>start: Launch Write.md
-op=>operation: Start Writing
-cond=>condition: Success? 
-e=>end: Awesome
-
-st->op->cond
-cond(yes)->e
-cond(no)->op
-```
+```mermaid
+graph TD;
+A[Hard edge] -->|Link text| B(Round edge)
+    B --> C{Decision}
+    C -->|One| D[Result one]
+    C -->|Two| E[Result two]
