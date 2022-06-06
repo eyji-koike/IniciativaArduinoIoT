@@ -10,7 +10,7 @@ Esse projeto utiliza uma Arduino Uno r3 com modulos: WiFi esp8266, GPS e dois bo
 ## Flow Charts
 ```mermaid
 graph TD;
-A[Hard edge] -->|Link text| B(Round edge)
+A([Boot]) -->|Link text| B(Round edge)
     B --> C{Decision}
     C -->|One| D[Result one]
     C -->|Two| E[Result two]
