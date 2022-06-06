@@ -46,7 +46,7 @@ Esse projeto utiliza uma Arduino Uno r3 com módulos: WiFi esp01 baseado no chip
 
 ## Configurando a GCP
 
-A Google oferece vários serviços de cloud hosting nas mais variadas modalidades. Para mais informações, acesse [este link](https://cloud.google.com/free/docs/gcp-free-tier#free-tier).
+A Google oferece vários serviços de cloud hosting nas mais variadas modalidades. Para mais informações sobre o free tier, acesse [este link](https://cloud.google.com/free/docs/gcp-free-tier#free-tier).
 
 ### Fluxo de informação
 
