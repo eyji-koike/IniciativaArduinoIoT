@@ -1,13 +1,66 @@
-# Iniciativa Arduino IoT - IFRS Caxias do Sul - Catraca 4.0 – Internet do fim do mundo.
-## Projeto de pesquisa - IMPLEMENTAÇÃO DA OFICINA INDÚSTRIA 4.0
-Esse projeto utiliza uma Arduino Uno r3 com modulos: WiFi esp8266, GPS e dois botoes.
 
-[TOC]
+# Internet do fim do mundo - Catraca 4.0
 
+Projeto de implementação da oficinas 4.0 no IFRS Campus Caxias do Sul.
+>*~Equipe Iniciativa Arduino IoT~*
 
+## Abstract
+Esse projeto utiliza uma Arduino Uno r3 com módulos: WiFi esp01 baseado no chip esp8266, GPS e dois botões. O protocolo de transmissão utilizado é o **Mosquito (MQTT)**  e o host para o backend é a **Google Cloud Platform** com os servicos de IoT Hub, e PUB/SUB.
 
+>***Disclaimer***  
+*Esse projeto pode causar cobranças e os autores não são responsáveis. Realize-o sob sua total consiência e leia o material disponível com atenção. Boa aprendizagem.*
 
-## Fluxograma da função main
+---
+**Tabela de conteúdo**
+
+1. [Configurando a GCP](#configurando-a-gcp)
+    
+    1. [Fluxograma de fluxo das informações]()
+    2. [Setup IoT Hub]()
+    3. [Setup Cloud Pub/Sub]()
+    4. [Easy way - script de automação]()
+
+2. [Configurando o Arduino Uno r3 e a ESP01]()
+
+    1. [Instalando as bibliotecas na arduino IDE]()
+    2. [Fluxograma da Função Main](#fluxograma-da-função-main)
+    3. [Adaptando o código em C++]()
+
+3. [Testando a transferência de dados]()
+
+    1. [Verificação do Cloud Pub/Sub]()
+
+4. [Routing e armazenamento de dados]()
+
+    1. [Setup cloud functions]()
+    2. [Setup DB]()
+
+5. [Construção da dashboard]()
+
+    1. [*decidir ferramenta*]()
+
+6. [Integraçao com aplicativo Móvel]()
+
+    1. [Desenvolvimento Ionic]()
+---
+
+## Configurando a GCP
+
+A Google oferece vários serviços de cloud hosting nas mais variadas modalidades. Para mais informações, acesse [este link](https://cloud.google.com/free/docs/gcp-free-tier#free-tier).
+
+### Fluxo de informação
+
+### Setup IoT Hub
+
+### Setup Cloud Pub/Sub
+
+### Easy way - script de automação
+
+## Configurando o Arduino Uno r3 e a ESP01
+
+### Instalando as bibliotecas na arduino IDE
+
+### Fluxograma da função main
 ```mermaid
 graph TD;
 A((Início)) --> B[Iniciar módulo GPS]
@@ -28,6 +81,24 @@ A((Início)) --> B[Iniciar módulo GPS]
     I[Conectar cliente MQTT] --> H{Cliente MQTT Conectado?}
     end
 ```
-##
+### Adaptando o código em C++
+
+## Testando a transferência de dados
+
+### Verificação do Cloud Pub/Sub
+
+## Routing e armazenamento de dados
+
+### Setup cloud functions
+
+### Setup DB
+
+## Construção da dashboard
+
+### *~decidir ferramenta~*
+
+## Integraçao com aplicativo Móvel
+
+### Desenvolvimento Ionic
    
     
