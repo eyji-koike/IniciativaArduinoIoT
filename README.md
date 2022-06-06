@@ -15,33 +15,33 @@ Esse projeto utiliza uma Arduino Uno r3 com módulos: WiFi esp01 baseado no chip
 
 1. [Configurando a GCP](#configurando-a-gcp)
     
-    1. [Fluxograma de fluxo das informações]()
-    2. [Setup IoT Hub]()
-    3. [Setup Cloud Pub/Sub]()
-    4. [Easy way - script de automação]()
+    1. [Fluxograma de fluxo das informações](#fluxo-de-informação)
+    2. [Setup IoT Hub](#setup-iot-hub)
+    3. [Setup Cloud Pub/Sub](#setup-cloud-pubsub)
+    4. [Easy way - script de automação](#easy-way---script-de-automação)
 
-2. [Configurando o Arduino Uno r3 e a ESP01]()
+2. [Configurando o Arduino Uno r3 e a ESP01](#configurando-o-arduino-uno-r3-e-a-esp01)
 
-    1. [Instalando as bibliotecas na arduino IDE]()
+    1. [Instalando as bibliotecas na arduino IDE](#instalando-as-bibliotecas-na-arduino-ide)
     2. [Fluxograma da Função Main](#fluxograma-da-função-main)
-    3. [Adaptando o código em C++]()
+    3. [Adaptando o código em C++](#adaptando-o-código-em-c)
 
-3. [Testando a transferência de dados]()
+3. [Testando a transferência de dados](#testando-a-transferência-de-dados)
 
-    1. [Verificação do Cloud Pub/Sub]()
+    1. [Verificação do Cloud Pub/Sub](#verificação-do-cloud-pubsub)
 
-4. [Routing e armazenamento de dados]()
+4. [Routing e armazenamento de dados](#routing-e-armazenamento-de-dados)
 
-    1. [Setup cloud functions]()
-    2. [Setup DB]()
+    1. [Setup cloud functions](#setup-cloud-functions)
+    2. [Setup DB](#setup-db)
 
-5. [Construção da dashboard]()
+5. [Construção da dashboard](#construção-da-dashboard)
 
-    1. [*decidir ferramenta*]()
+    1. [*decidir ferramenta*](#decidir-ferramenta)
 
-6. [Integraçao com aplicativo Móvel]()
+6. [Integraçao com aplicativo Móvel](#integraçao-com-aplicativo-móvel)
 
-    1. [Desenvolvimento Ionic]()
+    1. [Desenvolvimento Ionic](#desenvolvimento-ionic)
 ---
 
 ## Configurando a GCP
