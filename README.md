@@ -2,7 +2,7 @@
 # Internet do fim do mundo - Catraca 4.0
 
 Projeto de implementação da oficinas 4.0 no IFRS Campus Caxias do Sul.
->*~Equipe Iniciativa Arduino IoT~*
+>*~Equipe Iniciativa Arduino IoT*
 
 ## Abstract
 Esse projeto utiliza uma Arduino Uno r3 com módulos: WiFi esp01 baseado no chip esp8266, GPS e dois botões. O protocolo de transmissão utilizado é o **Mosquito (MQTT)**  e o host para o backend é a **Google Cloud Platform** com os servicos de IoT Hub, e PUB/SUB.
