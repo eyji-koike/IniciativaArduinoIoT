@@ -1,6 +1,7 @@
 #Script .sh pra rodar e automatizar o provisionamento da infraestrutura na nuvem
 #Este codigo provisiona do IoT hub, que funciano como porta de entrada e metodo de autenticacao, 
 #ate o servico Pub/Sub que le as mensagens recebidas e as publica num topico
+#Atencao, o script precisa ser modificado de acordo com a necessidade
 
 export PROJECT_ID= #insira o nome do projeto aqui
 export REGION= #insira a regiao aqui
