@@ -74,8 +74,10 @@ A((Início)) --> B[Iniciar módulo GPS]
     H{Cliente MQTT Conectado?} -- no --> I[Conectar cliente MQTT]
     H{Cliente MQTT Conectado?} -- yes --> J[Adquirir telemetria]
     subgraph Adquirir e Enviar Telemetria
-        J[Adquirir telemetria] --> K[Mandar telemetria para GCP]
-        K[Mandar telemetria para GCP] --> H{Cliente MQTT Conectado?}
+        J[Adquirir telemetria] --> K{Botoeiras pressionadas?}
+        K{Botoeiras pressionadas?} -- yes -->L[Mandar telemetria para GCP]
+        K{Botoeiras pressionadas?} -- no --> H{Cliente MQTT Conectado?}
+        L[Mandar telemetria para GCP] --> H{Cliente MQTT Conectado?}
     end
     subgraph Conectar MQTT
     I[Conectar cliente MQTT] --> H{Cliente MQTT Conectado?}
