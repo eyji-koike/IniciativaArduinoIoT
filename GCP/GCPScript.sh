@@ -56,3 +56,5 @@ gcloud iot devices create $DEVICE_ID \
 #Essa funcao precisa ser modificada de acordo com o tipo de DB escolhido e o 
 #Codigo em python precisa ser levado ao cloud shell e tambem adaptado
 gcloud functions deploy iotcore_pubsub_to_influxdb --runtime python37 --trigger-topic $TOPIC_ID --region $REGION
+
+#fim
