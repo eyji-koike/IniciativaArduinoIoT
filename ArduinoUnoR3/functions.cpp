@@ -7,6 +7,7 @@
 // This file contains all the functions used to connect our board using the Uno and the ESP01
 // We only need to include our header, the other functions are the alredy
 #include "functions.h"
+#include "ciotconfig.h"
 
 //this is for us to use String instead of std::String
 using namespace std;

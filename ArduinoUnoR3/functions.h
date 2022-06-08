@@ -9,7 +9,6 @@
 /* This is a header file that points to other header files used by our functions and to the functions file*/
 #pragma once
 #include <stdio.h>
-#include "ciotconfig.h"
 #include <SoftwareSerial.h>
 #include <Arduino.h>
 /*#include "WiFiEsp.h"*/
