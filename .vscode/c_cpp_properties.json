@@ -3,7 +3,7 @@
     "configurations": [
         {
             "name": "Arduino",
-            "compilerPath": "/usr/bin/gcc",
+            "compilerPath": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
             "compilerArgs": [
                 "-Wall",
                 "-Wextra",
@@ -15,14 +15,22 @@
                 "-fno-threadsafe-statics",
                 "-Wno-error=narrowing"
             ],
-            "intelliSenseMode": "macos-clang-arm64",
+            "intelliSenseMode": "macos-gcc-arm64",
             "includePath": [
                 "/Users/eyjicuff/Library/Arduino15/packages/arduino/hardware/avr/1.8.5/cores/arduino",
-                "/Users/eyjicuff/Library/Arduino15/packages/arduino/hardware/avr/1.8.5/**",
                 "/Users/eyjicuff/Library/Arduino15/packages/arduino/hardware/avr/1.8.5/variants/standard",
                 "/Users/eyjicuff/Library/Arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/lib/gcc/avr/7.3.0/include",
                 "/Users/eyjicuff/Library/Arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/lib/gcc/avr/7.3.0/include-fixed",
-                "/Users/eyjicuff/Library/Arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/avr/include"
+                "/Users/eyjicuff/Library/Arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/avr/include",
+                "/Users/eyjicuff/Documents/GitHub/IniciativaArduinoIoT/ArduinoUnoR3/",
+                "/Users/eyjicuff/Documents/Arduino/libraries/Blynk/src/**",
+                "/Users/eyjicuff/Documents/Arduino/libraries/Firebase_Arduino_Client_Library_for_ESP8266_and_ESP32/src/**",
+                "/Users/eyjicuff/Documents/Arduino/libraries/Google_Cloud_IoT_Core_JWT/src/**",
+                "/Users/eyjicuff/Documents/Arduino/libraries/google-cloud-iot-arduino-master/src/**",
+                "/Users/eyjicuff/Documents/Arduino/libraries/MQTT/src/**",
+                "/Users/eyjicuff/Documents/Arduino/libraries/Rosserial_Arduino_Library/src/**",
+                "/Users/eyjicuff/Documents/Arduino/libraries/WiFiEsp-master/src/**",
+                "/Users/eyjicuff/Library/Arduino15/packages/arduino/hardware/avr/1.8.5/libraries/**"
             ],
             "forcedInclude": [
                 "/Users/eyjicuff/Library/Arduino15/packages/arduino/hardware/avr/1.8.5/cores/arduino/Arduino.h"
@@ -537,11 +545,11 @@
             "browse": {
                 "path": [
                     "/Users/eyjicuff/Library/Arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/avr",
-                    "/Users/eyjicuff/Library/Arduino15/packages/arduino/hardware/avr/1.8.5",
-                    "/Users/eyjicuff/Library/Arduino15/packages/arduino/hardware/avr/1.8.5/libraries/SoftwareSerial/src"
+                    "/Users/eyjicuff/Library/Arduino15/packages/arduino/hardware/avr/1.8.5"
                 ]
             },
-            "mergeConfigurations": true
+            "mergeConfigurations": true,
+            "macFrameworkPath": []
         }
     ]
 }
