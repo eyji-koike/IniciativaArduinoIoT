@@ -14,12 +14,7 @@ using namespace std;
 
 //define the ports connected to the wifi module UART
 SoftwareSerial wifiModule(2,3,false);       //object wifiModule of class SoftwareSerial
-
-//here we hardcode our network information - this is not ideal
-//const char* ssid = "WIFI NETWORK";          // WIFI network SSID or AP SSID
-// ßconst char* password = "PASSWORD";          // WIFI network PASSWORD
-
-boolean debug=true;                         //Activate debug mode to show messages back
+boolean debug=true;                         //Activate debug mode to show messages back to UI
 
 /* This is a helper function used inside connectToWiFiNetwork */
 void clearESP_buffer(unsigned int timeout){
@@ -34,7 +29,7 @@ void clearESP_buffer(unsigned int timeout){
 };
 
 /* This is a helper function used inside connectToWiFiNetwork */
-boolean waitForResponse(String target1,  unsigned int timeout){
+boolean waitForResponse(String target1,  unsigned int timeout){ //this is meant as a buffer before sending another message
     String data;
     char a;
     unsigned long start = millis();
@@ -56,17 +51,16 @@ boolean waitForResponse(String target1,  unsigned int timeout){
 
 /* This functions connects the board to wifi */
 void connectToWiFiNetwork(){
-    Serial.println("Connecting to "+String(ssid));
+    Serial.println("Connecting to "+String(ssid)); //output that is connecting to wifi
     clearESP_buffer(1000);
-    wifiModule.println("AT+GMR");
-    delay(100);
+    wifiModule.println("AT+GMR");       //check version
     waitForResponse("OK",1000);
     
     wifiModule.println("AT+CWMODE=1");  // configure as client
     waitForResponse("OK",1000);
     
     //--- connect
-    wifiModule.print("AT+CWJAP=\"");
+    wifiModule.print("AT+CWJAP=\""); 
     wifiModule.print(ssid);
     wifiModule.print("\",\"");
     wifiModule.print(password);
@@ -76,4 +70,12 @@ void connectToWiFiNetwork(){
     wifiModule.println("AT+CIFSR");           // get ip address
     waitForResponse("OK",1000);
     
+};
+
+//this function is meant to reconnect to the wifi if ever needed
+void reconnect(){
+    clearESP_buffer(1000);
+    wifiModule.println("AT+CWQAP");     //disconnect
+    waitForResponse("OK",1000);
+    connectToWiFiNetwork(); //connect
 };

@@ -28,4 +28,7 @@ boolean waitForResponse(String target1,  unsigned int timeout);
 /* This functions connects the board to wifi */
 void connectToWiFiNetwork();
 
+//this function is meant to reconnect to the wifi if ever needed
+void reconnect();
+
 

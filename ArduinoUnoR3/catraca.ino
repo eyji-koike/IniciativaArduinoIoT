@@ -9,7 +9,7 @@ using namespace std;
 
 /*funcao de setup*/
 void setup(){
-connectToWiFiNetwork();
+    connectToWiFiNetwork();
 }
 
 /*funcao main*/
