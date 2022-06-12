@@ -3,13 +3,11 @@
 /* Inlcuir as Bibliotecas */
 #include "functions.h"
 
-/* inicia variáveis e objetos*/
-using namespace std;
-
 
 /*funcao de setup*/
 void setup(){
     connectToWiFiNetwork();
+    //mqtt->mqttConnect();
 }
 
 /*funcao main*/

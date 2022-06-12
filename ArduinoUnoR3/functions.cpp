@@ -13,8 +13,12 @@
 using namespace std;
 
 //define the ports connected to the wifi module UART
-SoftwareSerial wifiModule(2,3,false);       //object wifiModule of class SoftwareSerial
+SoftwareSerial wifiModule(6,7,false);       //object wifiModule of class SoftwareSerial
 boolean debug=true;                         //Activate debug mode to show messages back to UI
+int status = WL_IDLE_STATUS;                //Temporary flag attributed when wifi is started and stays active
+//Until the number of trials expire (result in wl_no_shield or until a conecction is estabelished
+//result (result in wl_connected)
+ 
 
 /* This is a helper function used inside connectToWiFiNetwork */
 void clearESP_buffer(unsigned int timeout){
@@ -51,24 +55,34 @@ boolean waitForResponse(String target1,  unsigned int timeout){ //this is meant 
 
 /* This functions connects the board to wifi */
 void connectToWiFiNetwork(){
-    Serial.println("Connecting to "+String(ssid)); //output that is connecting to wifi
-    clearESP_buffer(1000);
-    wifiModule.println("AT+GMR");       //check version
-    waitForResponse("OK",1000);
+    WiFi.init(&wifiModule); //Inicia o modulo wifi
+    //INÍCIO - VERIFICA SE O ESP8266 ESTÁ CONECTADO AO ARDUINO, CONECTA A REDE SEM FIO E INICIA O WEBSERVER
+    if(WiFi.status() == WL_NO_SHIELD){
+        while (true);
+    }
+    while(status != WL_CONNECTED){
+     status = WiFi.begin(ssid, password);
+    }
     
-    wifiModule.println("AT+CWMODE=1");  // configure as client
-    waitForResponse("OK",1000);
     
-    //--- connect
-    wifiModule.print("AT+CWJAP=\""); 
-    wifiModule.print(ssid);
-    wifiModule.print("\",\"");
-    wifiModule.print(password);
-    wifiModule.println("\"");
-    waitForResponse("OK",10000);
+    // Serial.println("Connecting to "+String(ssid)); //output that is connecting to wifi
+    // clearESP_buffer(1000);
+    // wifiModule.println("AT+GMR");       //check version
+    // waitForResponse("OK",1000);
+    
+    // wifiModule.println("AT+CWMODE=1");  // configure as client
+    // waitForResponse("OK",1000);
+    
+    // //--- connect
+    // wifiModule.print("AT+CWJAP=\""); 
+    // wifiModule.print(ssid);
+    // wifiModule.print("\",\"");
+    // wifiModule.print(password);
+    // wifiModule.println("\"");
+    // waitForResponse("OK",10000);
 
-    wifiModule.println("AT+CIFSR");           // get ip address
-    waitForResponse("OK",1000);
+    // wifiModule.println("AT+CIFSR");           // get ip address
+    // waitForResponse("OK",1000);
     
 };
 
@@ -79,3 +93,4 @@ void reconnect(){
     waitForResponse("OK",1000);
     connectToWiFiNetwork(); //connect
 };
+

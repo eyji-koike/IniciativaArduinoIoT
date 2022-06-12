@@ -11,13 +11,23 @@
 #include <stdio.h>
 #include <SoftwareSerial.h>
 #include <Arduino.h>
-/*#include "WiFiEsp.h"*/
 #include <time.h>
-// #include <MQTT.h>
-// #include <CloudIoTCore.h>
-// #include <CloudIoTCoreMqtt.h>
+#include <MQTT.h>
+//#include <CloudIoTCore.h>
+//#include <CloudIoTCoreMqtt.h>
+#include <WiFiEsp.h>
+#include <WiFiEspClient.h>
+#include <WiFiEspUdp.h>
+
 
 using namespace std;
+//Start new objects 
+Client *netClient;
+//CloudIoTCoreDevice *device;
+//CloudIoTCoreMqtt *mqtt;
+MQTTClient *mqttClient;
+unsigned long iss = 0;
+String jwt;
 
 /* This is a helper function used inside connectToWiFiNetwork */
 void clearESP_buffer(unsigned int timeout);
@@ -30,5 +40,7 @@ void connectToWiFiNetwork();
 
 //this function is meant to reconnect to the wifi if ever needed
 void reconnect();
+
+
 
 

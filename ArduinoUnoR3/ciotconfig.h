@@ -16,14 +16,14 @@
 // Esse arquivo contém as configuracoes pra conexao ao cloud Iot e wifi
 
 // WIFI
-const char* ssid = "SSID";
-const char* password = "PASSWORD";
+const char* ssid = "*********";
+const char* password = "********";
 
 // Cloud iot details.
-const char* project_id = "project-id";
-const char* location = "us-central1";
-const char* registry_id = "my-registry";
-const char* device_id = "my-device";
+const char* project_id = "88d";
+const char* location = "***";
+const char* registry_id = "***";
+const char* device_id = "***";
 
 // Configuration for NTP
 const char* ntp_primary = "a.ntp.br";
