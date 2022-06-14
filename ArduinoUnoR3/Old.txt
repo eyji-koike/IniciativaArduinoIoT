@@ -1,0 +1,139 @@
+Sketch final:
+#define GPS_RX 4 // porta RX do GPS
+#define GPS_TX 3 // porta TX do GPS
+#define GSM_RX 10 // porta RX do GSM
+#define GSM_TX 11 // porta TX do GSM
+#define botao 2 // porta digital do botão
+#define led 7 // porta digital do led
+#define Serial_Baud 9600 //velocidade de comunicação
+
+#include <SoftwareSerial.h> //biblioteca para Serial
+#include <TinyGPS.h> //biblioteca parao GPS
+
+SoftwareSerial GSM_Serial(GSM_RX, GSM_TX);
+SoftwareSerial GPS_Serial(GPS_RX, GPS_TX);
+
+TinyGPS gps;
+
+float latitude, longitude;
+String horas, minutos, seg, dia, mes, ano;
+String data_gps, hora_gps;
+
+void setup()
+{
+  pinMode(botao, INPUT); //definição do botão como entrada
+  pinMode(led , OUTPUT); //definição do led como saida
+
+  Serial.begin(Serial_Baud);
+  GSM_Serial.begin(Serial_Baud);
+  GPS_Serial.begin(Serial_Baud);
+  
+  Serial.println("Initializing...");
+  delay(1000);
+
+  GSM_Serial.println("AT+CMGF=1\n;AT+CNMI=1,2,0,0,0\n;ATX4\n;AT+COLP=1\n"); //Estabelece a comunicação AT com o GSM
+}
+
+void loop()
+{
+  catraca(); // função que sinaliza o giro da catraca (aperto do botão)
+}
+
+void catraca()
+{
+  if(digitalRead(botao)){
+    digitalWrite(led, HIGH); //acende o led
+    leGPS(); //função para coleta dos dados do gps   
+    envioDados(); // função para o envio dos dados coletados
+    digitalWrite(led, LOW); //apaga o led
+  }
+}
+void envioDados(){
+
+  /*Função que irá permitir o envio dos dados que foram coletados 
+   * do GPS, mandando a latitude, longitude, data e hora para o 
+   * número especificado.
+  */
+  GSM_Serial.println("AT+CMGF=1"); //Estabelece formato de mensagem SMS como texto
+  delay(500);
+  GSM_Serial.println("AT+CMGS=\"+5554991170188\"\r"); //Número para envio dos dados
+  delay(500);
+  Serial.println("OK");
+  GSM_Serial.print("Longitude: ");
+  GSM_Serial.print(longitude); //Envio do dado longitude
+  GSM_Serial.print("\n");
+  GSM_Serial.print("Latitude: "); 
+  GSM_Serial.print(latitude); //Envio do dado latitude
+  GSM_Serial.print("\n");
+  GSM_Serial.print("Data: ");
+  GSM_Serial.print(data_gps); //Envio do dado data
+  GSM_Serial.print("\n");
+  GSM_Serial.print("Hora: ");
+  GSM_Serial.print(hora_gps); //Envio do dado hora
+  delay(500);
+  GSM_Serial.write(26);
+
+}
+void leGPS() {
+unsigned long delayGPS = millis(); //Variável para delay
+
+   // Parte do programa que vai fazer a leitura do GPS
+   GPS_Serial.listen(); 
+   bool lido = false;
+   while ( (millis() - delayGPS) < 500 ) { 
+      while (GPS_Serial.available()) {
+          char cIn = GPS_Serial.read(); 
+          if (gps.encode(cIn)){
+            lido = true; 
+          }
+      }
+
+      if (lido) { 
+         float flat, flon;
+         unsigned long data, hora;
+         unsigned long age;
+         gps.f_get_position(&flat, &flon, &age); //obter as posições
+         Serial.print("LAT=");
+         //Se não tiver o dado de latitude retorna zero
+         Serial.print(flat == TinyGPS::GPS_INVALID_F_ANGLE ? 0.0 : flat, 6); 
+         Serial.print(" LON=");
+         //Se não tiver o dado de longitude retorna zero
+         Serial.print(flon == TinyGPS::GPS_INVALID_F_ANGLE ? 0.0 : flon, 6);
+          
+         latitude = flat;
+         longitude = flon;
+         
+         Serial.println("OK");
+
+         gps.get_datetime(&data, &hora);
+
+         // Formatação da data e gora
+         Serial.print("--");
+         Serial.print(hora / 1000000);
+         Serial.print(":");
+         Serial.print((hora % 1000000) / 10000);
+         Serial.print(":");
+         Serial.print((hora % 10000) / 100);
+         Serial.print("--");
+         Serial.print(data / 10000);
+         Serial.print("/");
+         Serial.print((data % 10000) / 100);
+         Serial.print("/");
+         Serial.print(data % 100);
+         Serial.println("--");
+
+         horas = (hora / 1000000) - 3;
+         minutos = (hora % 1000000) / 10000;
+         seg = (hora % 10000) / 100;
+         
+         dia = data / 10000;
+         mes = (data % 10000) / 100;
+         ano = data % 100;
+         
+         hora_gps = String(horas + ":" + minutos + ":" + seg);
+         data_gps = String(dia + "/" + mes + "/" + ano);
+  
+         break; 
+      }
+   }   
+}

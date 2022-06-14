@@ -1,46 +1,53 @@
-#include <WiFiEsp.h>
-#include <WiFiEspClient.h>
-#include <WiFiEspUdp.h>
-#include "SoftwareSerial.h"
-#include <PubSubClient.h>
+//
+//
+//
+//
 
+// includes
+#include "Functions.h"
 
-IPAddress server(10, 0, 0, 2);
-char ssid[] = "DIR-842-4EA9";           // your network SSID (name)
-char pass[] = "18250647";           // your network password
-int status = WL_IDLE_STATUS;   // the Wifi radio's status
+// declaration of variables
+float lat, lon;                 // two float variables to store the latitude and logitude
+SoftwareSerial gpsSerial(2, 3); // define the rx, tx for the GPS
+TinyGPS gps;                    // Create a tiny gps object
+int speed = 9600;               // baud rate or speed of our connections
+unsigned long date, time, age;  // variable to store date time and age if any
 
-// Initialize the Ethernet client object
-WiFiEspClient espClient;
-
-SoftwareSerial soft(2,3); // RX, TX
-void setup() {
-  // initialize serial for debugging
-  Serial.begin(9600);
-  // initialize serial for ESP module
-  soft.begin(9600);
-  // initialize ESP module
-  WiFi.init(&soft);
-
-  // check for the presence of the shield
-  if (WiFi.status() == WL_NO_SHIELD) {
-    Serial.println("WiFi shield not present");
-    // don't continue
-    while (true);
-  }
-
-  // attempt to connect to WiFi network
-  while ( status != WL_CONNECTED) {
-    Serial.print("Attempting to connect to WPA SSID: ");
-    Serial.println(ssid);
-    // Connect to WPA/WPA2 network
-    status = WiFi.begin(ssid, pass);
-  }
-
-  // you're connected now, so print out the data
-  Serial.println("You're connected to the network");
+// here we make the setup
+void setup()
+{
+    Serial.begin(speed);    // Start the serial comm with the computer
+    gpsSerial.begin(speed); // Star the communication between uno and the gps module
 }
 
-void loop(){
-
+void loop()
+{
+    bool newData;
+    for (unsigned long start = millis(); millis() - start < 1000;)
+    {
+        while (gpsSerial.available()) // check for gps data
+        {
+            char c = gpsSerial.read();
+            Serial.write(c);
+            if (gps.encode(c)) // Atribui true para newData caso novos dados sejam recebidos
+                newData = true;
+        }
+    }
+    if (newData)
+    {
+        float flat, flon;
+        unsigned long age;
+        gps.f_get_position(&flat, &flon, &age);
+        Serial.print("\nLAT=");
+        Serial.print(flat == TinyGPS::GPS_INVALID_F_ANGLE ? 0.0 : flat, 6);
+        Serial.print(" LON=");
+        Serial.print(flon == TinyGPS::GPS_INVALID_F_ANGLE ? 0.0 : flon, 6);
+        Serial.print(" SAT=");
+        Serial.print(gps.satellites() == TinyGPS::GPS_INVALID_SATELLITES ? 0 : gps.satellites());
+        Serial.print(" PREC=");
+        Serial.print(gps.hdop() == TinyGPS::GPS_INVALID_HDOP ? 0 : gps.hdop());
+        Serial.println();
+        Serial.println();
+    }
+    delay(5000); 
 }

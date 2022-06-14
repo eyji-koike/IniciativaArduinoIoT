@@ -2,5 +2,5 @@
     "board": "arduino:avr:uno",
     "sketch": "ArduinoUnoR3/Catraca.ino",
     "programmer": "arduino:avrispmkii",
-    "port": "/dev/tty.usbserial-110"
+    "port": "/dev/tty.usbmodem1101"
 }
