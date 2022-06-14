@@ -12,7 +12,7 @@ SoftwareSerial gpsSerial(2, 3); // define the rx, tx for the GPS
 TinyGPS gps;                    // Create a tiny gps object
 int speed = 9600;               // baud rate or speed of our connections
 unsigned long date, time, age;  // variable to store date time and age if any
-
+inline long alt;                // get the altitude just for fun
 // here we make the setup
 void setup()
 {
@@ -31,6 +31,8 @@ void loop()
             Serial.write(c);
             if (gps.encode(c)) // Atribui true para newData caso novos dados sejam recebidos
                 newData = true;
+             gps.get_datetime(&date, &time, &age);
+             alt = gps.f_altitude();
         }
     }
     if (newData)
@@ -46,6 +48,14 @@ void loop()
         Serial.print(gps.satellites() == TinyGPS::GPS_INVALID_SATELLITES ? 0 : gps.satellites());
         Serial.print(" PREC=");
         Serial.print(gps.hdop() == TinyGPS::GPS_INVALID_HDOP ? 0 : gps.hdop());
+        Serial.print(" ALT=");
+        Serial.print(alt);
+        Serial.print(" DATE=");
+        Serial.print(date);
+        Serial.print(" TIME=");
+        Serial.print(time);
+        Serial.print(" AGE+");
+        Serial.print(age);
         Serial.println();
         Serial.println();
     }
