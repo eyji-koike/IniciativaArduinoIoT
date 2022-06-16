@@ -4,12 +4,13 @@
 //includes
 #include "LCDFunctions.h"
 
-const int rs = 2, 
-          en = 3, 
-          d4 = 6, 
-          d5 = 7, 
-          d6 = 8, 
-          d7 = 9;
+const int rs = 13, 
+          en = 12, 
+          d4 = 7, 
+          d5 = 6, 
+          d6 = 5, 
+          d7 = 4;
+
 
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
@@ -18,7 +19,7 @@ void setup()
 {
   //Define o número de colunas e linhas do LCD
   lcd.begin(16, 2);
-  lcd.print("FILIPEFLOP");
+  Serial.begin(9600);
 }
  
 void loop()
