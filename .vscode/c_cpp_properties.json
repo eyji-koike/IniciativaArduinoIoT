@@ -24,7 +24,9 @@
                 "/Users/eyjicuff/opt/anaconda3/pkgs/libcxx-12.0.0-hf6beb65_1/include/c++/v1/**",
                 "/Users/eyjicuff/Documents/Arduino/libraries/ITEADLIB_Arduino_WeeESP8266-master",
                 "${workspaceFolder}/ArduinoUnoR3/**",
-                "/Users/eyjicuff/Documents/Arduino/libraries/PubSubClient/src"
+                "/Users/eyjicuff/Documents/Arduino/libraries/PubSubClient/src",
+                "/Users/eyjicuff/Documents/Arduino/libraries/TinyGSM/src",
+                "/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SoftwareSerial/src"
             ],
             "forcedInclude": [
                 "/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/cores/arduino/Arduino.h"

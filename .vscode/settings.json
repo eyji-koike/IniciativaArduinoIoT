@@ -3,6 +3,7 @@
         "cstdlib": "cpp",
         "cloudiotcoremqtt.h": "c",
         "ios": "cpp",
-        "random": "cpp"
+        "random": "cpp",
+        "*.tpp": "cpp"
     }
 }
