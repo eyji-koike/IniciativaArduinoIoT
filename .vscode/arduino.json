@@ -1,6 +1,0 @@
-{
-    "board": "arduino:avr:uno",
-    "sketch": "ArduinoUnoR3/CatracaGSM/gsm.ino",
-    "programmer": "arduino:avrispmkii",
-    "port": "/dev/tty.usbmodem1101"
-}

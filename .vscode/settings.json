@@ -1,9 +1,0 @@
-{
-    "files.associations": {
-        "cstdlib": "cpp",
-        "cloudiotcoremqtt.h": "c",
-        "ios": "cpp",
-        "random": "cpp",
-        "*.tpp": "cpp"
-    }
-}
