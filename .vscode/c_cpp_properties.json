@@ -26,7 +26,8 @@
                 "${workspaceFolder}/ArduinoUnoR3/**",
                 "/Users/eyjicuff/Documents/Arduino/libraries/PubSubClient/src",
                 "/Users/eyjicuff/Documents/Arduino/libraries/TinyGSM/src",
-                "/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SoftwareSerial/src"
+                "/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SoftwareSerial/src",
+                "/Users/eyjicuff/Documents/Arduino/libraries/SerialTransfer/src"
             ],
             "forcedInclude": [
                 "/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/cores/arduino/Arduino.h"
