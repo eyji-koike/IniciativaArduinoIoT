@@ -3,6 +3,7 @@
 //
 //
 
+#define ARDUINO 10890
 // includes
 #include "Functions.h"
 
