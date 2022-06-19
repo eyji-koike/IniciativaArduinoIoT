@@ -17,3 +17,35 @@
 #include <SoftwareSerial.h>
 #include <Arduino.h>
 #include <LiquidCrystal.h>
+#include <TinyGPS.h>
+#include <LiquidCrystal.h>
+#include "SerialTransfer.h"
+
+//define the structure of our telemetry
+struct telemetry{
+    long entrance;
+    long exit;
+    long hdop;
+    float lat;
+    float lon;
+    float alt;
+    float course;
+    float speedkmph;
+    unsigned short numSat;
+    unsigned long date;
+    unsigned long time;
+    unsigned long fixAge;
+
+};
+
+// This function is used to get a debounced input from button
+bool readSwitchDebounced(int buttonPin);
+
+//this functions was made to update the LCD within our request
+void updateLCD(LiquidCrystal &lcd, unsigned long globalEntranceCounter, unsigned long globalExitCounter);
+
+//this function was made to simplify the data transfer
+void sendTelemetry(telemetry &telemetry, SerialTransfer &transfer);
+
+// this function was made to get GPS information
+void getGPS(SoftwareSerial &comm, TinyGPS &gps, telemetry &telemetry);
