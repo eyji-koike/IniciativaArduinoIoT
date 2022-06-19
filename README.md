@@ -6,11 +6,13 @@ Projeto de implementação da oficinas 4.0 no IFRS Campus Caxias do Sul.
 
 ## Abstract
 Esse projeto utiliza uma Arduino Uno r3 com módulos: WiFi esp01 baseado no chip esp8266, GPS e dois botões. O protocolo de transmissão utilizado é o **Mosquito (MQTT)**  e o host para o backend é a **Google Cloud Platform** com os servicos de IoT Hub, e PUB/SUB.
-
 >***Disclaimer***  
 *Esse projeto pode causar cobranças e os autores não são responsáveis. Realize-o sob sua total consiência e leia o material disponível com atenção. Boa aprendizagem.*
 
----
+**Fluxo de informação**
+
+![Fluxo de informação](https://github.com/eyji-koike/IniciativaArduinoIoT/blob/main/Assets/InformationFluxogram.png)
+
 **Tabela de conteúdo**
 
 1. [Configurando a GCP](#configurando-a-gcp)
