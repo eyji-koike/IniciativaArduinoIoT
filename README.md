@@ -64,9 +64,25 @@ A Google oferece vários serviços de cloud hosting nas mais variadas modalidade
 
 ### Fluxograma da função main
 ```mermaid
-graph TD;
-A((Início)) --> B[Set variables]
-    end
+flowchart TB
+    A((Início)) --> B[Declarar Variáveis]
+    B --> Setup
+        subgraph Setup
+        direction TB
+        C[Set first run as true] --> D[Begin serial with esp01]
+        D --> E[Iniciar serial com computador]
+        E --> F[Iniciar serial com GPS]
+        F --> G[Iniciar o objeto de transferência]
+        G --> H[Configurar LCD]
+        H --> I[Informar que o setup completou]
+        I --> J[Iniciar a contagem de tempo]
+        end
+    Setup --> Loop
+        subgraph Loop
+        direction TB
+        K[Salvar o tempo atual] --> L{É o primeiro scan ou é hora de atualizar os dados de GPS?}
+        L -- Sim --> M[Atualiza GPS getGPS]
+        end
 ```
 ### Adaptando o código em C++
 
