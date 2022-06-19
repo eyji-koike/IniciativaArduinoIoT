@@ -25,12 +25,12 @@ const int rs = 13,
           d6 = 9,
           d7 = 8,
           gpsRX = 6, // gps TX ==> Digital pin (D6)
-    gpsTX = 7,       // gps RX ==> Digital pin (D7)
-    buttonEntrance = 5,
+          gpsTX = 7,       // gps RX ==> Digital pin (D7)
+          buttonEntrance = 5,
           buttonExit = 4,
           espRX = 2,   // esp TX ==> Digital pin (D2)
-    espTX = 3,         // gps RX ==> Digital pin (D3)
-    updateTime = 1000; // time between gps updates
+          espTX = 3,         // gps RX ==> Digital pin (D3)
+          updateTime = 1000; // time between gps updates
 unsigned long frontCounter;
 unsigned long backCounter;
 static long startTime;
