@@ -4,12 +4,17 @@
 Projeto de implementação da oficinas 4.0 no IFRS Campus Caxias do Sul.
 >*~Equipe Iniciativa Arduino IoT*
 
+>*[Read this in English]()*
+>
+>*[Read this in Spanish]()*
 ## Abstract
-Esse projeto utiliza uma Arduino Uno r3 com módulos: WiFi esp01 baseado no chip esp8266, GPS e dois botões. O protocolo de transmissão utilizado é o **Mosquito (MQTT)**  e o host para o backend é a **Google Cloud Platform** com os servicos de IoT Hub, e PUB/SUB.
+Esse projeto utiliza uma Arduino Uno r3 com módulos: WiFi esp01 baseado no chip esp8266, GPS e dois botões. O protocolo de transmissão utilizado é o **[Mosquito (MQTT)](https://mosquitto.org/)**  e o host para o backend é a **[Google Cloud Platform](https://cloud.google.com/)** com os servicos de IoT Hub, e PUB/SUB. Para nossa solução de retenção de dados, utilizamos um gatilho da google cloud functions que, quando acionado, manda os dados recebidos para o [Google Firebase](https://firebase.google.com/).
 >***Disclaimer***  
 *Esse projeto pode causar cobranças e os autores não são responsáveis. Realize-o sob sua total consiência e leia o material disponível com atenção. Boa aprendizagem.*
 
-**Fluxo de informação**
+**Visão Geral**
+
+O fluxo de informação vai ocorrer como representado na figura abaixo:
 
 ![Fluxo de informação](https://github.com/eyji-koike/IniciativaArduinoIoT/blob/main/Assets/InformationFluxogram.png)
 
@@ -17,10 +22,9 @@ Esse projeto utiliza uma Arduino Uno r3 com módulos: WiFi esp01 baseado no chip
 
 1. [Configurando a GCP](#configurando-a-gcp)
     
-    1. [Fluxograma de fluxo das informações](#fluxo-de-informação)
-    2. [Setup IoT Hub](#setup-iot-hub)
-    3. [Setup Cloud Pub/Sub](#setup-cloud-pubsub)
-    4. [Easy way - script de automação](#easy-way---script-de-automação)
+    1. [Setup IoT Hub](#setup-iot-hub)
+    2. [Setup Cloud Pub/Sub](#setup-cloud-pubsub)
+    3. [Easy way - script de automação](#easy-way---script-de-automação)
 
 2. [Configurando o Arduino Uno r3 e a ESP01](#configurando-o-arduino-uno-r3-e-a-esp01)
 
@@ -48,11 +52,21 @@ Esse projeto utiliza uma Arduino Uno r3 com módulos: WiFi esp01 baseado no chip
 
 ## Configurando a GCP
 
-A Google oferece vários serviços de cloud hosting nas mais variadas modalidades. Para mais informações sobre o free tier, acesse [este link](https://cloud.google.com/free/docs/gcp-free-tier#free-tier).
-
-### Fluxo de informação
+A Google oferece vários serviços de cloud hosting nas mais variadas modalidades. Para mais informações sobre o free tier, acesse [este link](https://cloud.google.com/free/docs/gcp-free-tier#free-tier). A configuração pode ser feita utilizando os menus, ou utilizando o shell. Há também um script que pode ser adaptado para tornar o provisionamento de estrutura automático.
 
 ### Setup IoT Hub
+
+Primeiramente precisamos configar nomes para nossos serviços. Copie e cole as variáveis abaixo no seu bloco de notas, e preencha com o valor que achar adequado para seu projeto. Depois do preenchimento essas variáveis podem ser coladas diretamente no cloud shell, ou você pode utilizá-las como guia para preencher os campos nos menus do Google Cloud Console.
+
+```shell
+export PROJECT_ID=      #insira o nome do projeto aqui
+export REGION=          #insira a regiao aqui
+export TOPIC_ID=        #insisra a ID do topico aqui
+export SUBSCRIPTION=    #insisra a subscricao aqui
+export REGISTRY=        #insisra o nome do registro aqui
+export DEVICE_ID=       #insira a identificacao do dispositivo
+```
+Com seus nomes (ou identificões, se preferir) em mãos, podemos prosseguir para a próxima etapa. Crie um projeto com o mesmo nome que escolheu em PROJECT_ID e 
 
 ### Setup Cloud Pub/Sub
 
@@ -60,30 +74,13 @@ A Google oferece vários serviços de cloud hosting nas mais variadas modalidade
 
 ## Configurando o Arduino Uno r3 e a ESP01
 
+Em nosso sistema, o Arduíno Uno é o responsável por realizar a coleta dos dados de telemetria, equanto a ESP01 ficará responsável por mandar a telemetria via MQTT, conectar-se ao Access Point Wi-Fi e conectar-se ao GCP.
+
+
 ### Instalando as bibliotecas na arduino IDE
 
 ### Fluxograma da função main
-```mermaid
-flowchart TB
-    A((Início)) --> B[Declarar Variáveis]
-    B --> Setup
-        subgraph Setup
-        direction TB
-        C[Set first run as true] --> D[Begin serial with esp01]
-        D --> E[Iniciar serial com computador]
-        E --> F[Iniciar serial com GPS]
-        F --> G[Iniciar o objeto de transferência]
-        G --> H[Configurar LCD]
-        H --> I[Informar que o setup completou]
-        I --> J[Iniciar a contagem de tempo]
-        end
-    Setup --> Loop
-        subgraph Loop
-        direction TB
-        K[Salvar o tempo atual] --> L{É o primeiro scan ou é hora de atualizar os dados de GPS?}
-        L -- Sim --> M[Atualiza GPS getGPS]
-        end
-```
+
 ### Adaptando o código em C++
 
 ## Testando a transferência de dados
