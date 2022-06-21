@@ -31,6 +31,7 @@ const int rs = 13,
           espRX = 2,   // esp TX ==> Digital pin (D2)
           espTX = 3,         // gps RX ==> Digital pin (D3)
           updateTime = 1000; // time between gps updates
+
 unsigned long frontCounter;
 unsigned long backCounter;
 static long startTime;
@@ -48,6 +49,8 @@ LiquidCrystal lcd(rs, en, d4, d5, d6, d7); // our luqid crystal
 void setup()
 {
     firstRun = true;                 // flag ou first run
+    pinMode(buttonEntrance, INPUT);  // set as input to read our button
+    pinMode(buttonExit, INPUT);      // set as input to read our button
     esp1.begin(serialBaud);          // start serial with esp01
     Serial.begin(serialBaud);        // start serial with computer
     gpsSerial.begin(serialBaud);     // start serial with gps

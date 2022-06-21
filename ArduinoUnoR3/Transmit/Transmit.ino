@@ -1,6 +1,6 @@
 #include "CustomFunctions.h"
 #include "SerialTransfer.h"
-
+#include 
 
 SerialTransfer myTransfer;
 SoftwareSerial Serial1(2,3);
@@ -39,4 +39,5 @@ void loop()
   ///////////////////////////////////////// Send buffer
   myTransfer.sendData(sendSize);
   delay(500);
+  Wire.begin()
 }
