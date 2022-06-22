@@ -1,3 +1,5 @@
+#!/bin/bash
+
 #Script .sh pra rodar e automatizar o provisionamento da infraestrutura na nuvem
 #Este codigo provisiona do IoT hub, que funciano como porta de entrada e metodo de autenticacao, 
 #ate o servico Pub/Sub que le as mensagens recebidas e as publica num topico
