@@ -49,9 +49,9 @@ bool readSwitchDebounced(int buttonPin)
 }
 
 // this function was made to get GPS information
-void getGPS(SoftwareSerial &comm, TinyGPS &gps, telemetry &telemetry)
+Telemetry getGPS(SoftwareSerial &comm, TinyGPS &gps)
 {
-
+    Telemetry telemetry;
     bool newData = false;
     while (comm.available()) // check for gps data
     {
@@ -70,6 +70,7 @@ void getGPS(SoftwareSerial &comm, TinyGPS &gps, telemetry &telemetry)
         telemetry.numSat = gps.satellites();                                   // parse the current number of sattelites that we are connected to
         telemetry.hdop = gps.hdop();                                           // parse the quality of signal
     }
+    return telemetry;
 }
 
 // this functions was made to update the LCD within our request
@@ -85,7 +86,7 @@ void updateLCD(LiquidCrystal &lcd, unsigned long globalEntranceCounter, unsigned
 }
 
 // this function was made to simplify the data transfer
-void sendTelemetry(telemetry &telemetry, SerialTransfer &transfer)
+void sendTelemetry(Telemetry &telemetry, SerialTransfer &transfer)
 {
     // use this variable to keep track of how many
     // bytes we're stuffing in the transmit buffer

@@ -25,12 +25,12 @@ const int rs = 13,
           d6 = 9,
           d7 = 8,
           gpsRX = 6, // gps TX ==> Digital pin (D6)
-          gpsTX = 7,       // gps RX ==> Digital pin (D7)
-          buttonEntrance = 5,
+    gpsTX = 7,       // gps RX ==> Digital pin (D7)
+    buttonEntrance = 5,
           buttonExit = 4,
           espRX = 2,   // esp TX ==> Digital pin (D2)
-          espTX = 3,         // gps RX ==> Digital pin (D3)
-          updateTime = 1000; // time between gps updates
+    espTX = 3,         // gps RX ==> Digital pin (D3)
+    updateTime = 1000; // time between gps updates
 
 unsigned long frontCounter;
 unsigned long backCounter;
@@ -38,7 +38,7 @@ static long startTime;
 bool firstRun;                // save the first setup condition
 const int serialBaud = 57600; // the speed of our connections
 // create our objects and struct
-telemetry tel;                             // our telemetry struct
+Telemetry newTelemetry;                    // our telemetry struct
 SoftwareSerial gpsSerial(gpsRX, gpsTX);    // define the ports to communicate with gps
 SoftwareSerial esp1(espRX, espTX);         // define the ports to communicate with esp
 TinyGPS gps;                               // our tinygps object gps
@@ -64,28 +64,42 @@ void setup()
 void loop()
 {
     unsigned long currentMillis = millis(); // get the current time
-    // if we are on the first run or its time to update the gps we do it and get the time
-    if (firstRun == true || currentMillis - startTime >= updateTime)
+    newTelemetry = getGPS(gpsSerial, gps);  // get the gps info
+    while (firstRun = false || currentMillis - startTime < updateTime)
     {
-        getGPS(gpsSerial, gps, tel); // get the gps info
-        startTime = currentMillis;   // parse the current time for our control
+        // if we are on the first run or its time to update the gps we do it and get the time
+        firstRun = false;
+        startTime = currentMillis;                              // parse the current time for our control
+        bool frontButton = readSwitchDebounced(buttonEntrance); // read the button that represents the front
+        bool backButton = readSwitchDebounced(buttonExit);      // read the button that represents the back
+        // if the front button was pressed, set it in the struct, send, and increase the counter
+        if (frontButton == true || backButton == true)
+        {
+            if (frontButton == true && backButton == false)
+            {
+                newTelemetry.entrance = 1;
+                frontCounter++;
+            }
+            else if (frontButton == false && backButton == true)
+            {
+                newTelemetry.exit = 1;
+                backCounter++;
+            }
+            else
+            {
+                newTelemetry.entrance = 1;
+                newTelemetry.exit = 1;
+                frontCounter++;
+                backCounter++;
+            }
+            // use this variable to keep track of how many
+            // bytes we're stuffing in the transmit buffer
+            uint16_t sendSize = 0;
+            ///////////////////////////////////////// Stuff buffer with struct
+            sendSize = transferTel.txObj(newTelemetry, sendSize);
+            ///////////////////////////////////////// Send buffer
+            transferTel.sendData(sendSize);
+            updateLCD(lcd, frontCounter, backCounter); // refresh our display
+        }
     }
-    bool frontButton = readSwitchDebounced(buttonEntrance); // read the button that represents the front
-    bool backButton = readSwitchDebounced(buttonExit);      // read the button that represents the back
-    // if the front button was pressed, set it in the struct, send, and increase the counter
-    if (frontButton = true)
-    {
-        tel.entrance = 1;
-        sendTelemetry(tel, transferTel);
-        frontCounter++;
-    }
-    // if the back button was pressed, set it in the struct, send, and increase the counter
-    if (backButton == true)
-    {
-        tel.exit = 1;
-        sendTelemetry(tel, transferTel);
-        backCounter++;
-    }
-    updateLCD(lcd, frontCounter, backCounter); // refresh our display
-    firstRun = false;                          // set the first run as false
 }

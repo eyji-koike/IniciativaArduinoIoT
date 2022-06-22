@@ -22,7 +22,7 @@
 #include "SerialTransfer.h"
 
 //define the structure of our telemetry
-struct telemetry{
+struct Telemetry{
     long entrance;
     long exit;
     long hdop;
@@ -45,7 +45,7 @@ bool readSwitchDebounced(int buttonPin);
 void updateLCD(LiquidCrystal &lcd, unsigned long globalEntranceCounter, unsigned long globalExitCounter);
 
 //this function was made to simplify the data transfer
-void sendTelemetry(telemetry &telemetry, SerialTransfer &transfer);
+void sendTelemetry(Telemetry &telemetry, SerialTransfer &transfer);
 
 // this function was made to get GPS information
-void getGPS(SoftwareSerial &comm, TinyGPS &gps, telemetry &telemetry);
+Telemetry getGPS(SoftwareSerial &comm, TinyGPS &gps);
