@@ -65,6 +65,7 @@ void loop()
 {
     unsigned long currentMillis = millis(); // get the current time
     newTelemetry = getGPS(gpsSerial, gps);  // get the gps info
+    Serial.print("Got gps\n");
     while (firstRun = false || currentMillis - startTime < updateTime)
     {
         // if we are on the first run or its time to update the gps we do it and get the time
@@ -79,11 +80,13 @@ void loop()
             {
                 newTelemetry.entrance = 1;
                 frontCounter++;
+                Serial.print("Should have increased front counter\n");
             }
             else if (frontButton == false && backButton == true)
             {
                 newTelemetry.exit = 1;
                 backCounter++;
+                Serial.print("Should have increased back counter\n");
             }
             else
             {
@@ -91,6 +94,7 @@ void loop()
                 newTelemetry.exit = 1;
                 frontCounter++;
                 backCounter++;
+                Serial.print("Should have increased both");
             }
             // use this variable to keep track of how many
             // bytes we're stuffing in the transmit buffer
