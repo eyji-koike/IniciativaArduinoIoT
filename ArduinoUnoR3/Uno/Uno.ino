@@ -65,7 +65,9 @@ void setup()
 
 // main loop
 void loop()
-{
+{   
+    entrance.poll();
+    exitB.poll();
     unsigned long currentMillis = millis();
     if (currentMillis - startTime > updateTime){
       newTelemetry = getGPS(gpsSerial, gps);  // get the gps info
