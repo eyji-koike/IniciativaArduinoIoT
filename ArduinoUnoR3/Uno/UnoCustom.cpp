@@ -43,7 +43,7 @@ Telemetry getGPS(SoftwareSerial &comm, TinyGPS &gps)
     return telemetry;
 }
 
-// this functions was made to update the LCD within our request
+// this function was made to update the LCD within our request with a static message
 void updateLCD(LiquidCrystal &lcd, unsigned long globalEntranceCounter, unsigned long globalExitCounter)
 {
     String messageFirstLine = "En: ";

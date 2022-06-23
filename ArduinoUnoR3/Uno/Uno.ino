@@ -52,7 +52,7 @@ void setup()
     lcd.setCursor(0,0);
     lcd.print("Arduino IoT");
     lcd.setCursor(0,1);
-    lcd.print("Press a btn to begin");
+    lcd.print("Press to start");
     esp1.begin(serialBaud);          // start serial with esp01
     Serial.begin(serialBaud);        // start serial with computer
     gpsSerial.begin(serialBaud);     // start serial with gps
