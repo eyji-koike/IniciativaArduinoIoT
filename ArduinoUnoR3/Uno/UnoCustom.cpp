@@ -18,7 +18,7 @@
 
 // This function is used to get a debounced input from button
 bool readSwitchDebounced(int buttonPin)
-{ 
+{
     bool switched = true;          // Keeps track of weather the button was switched or not
     int switch_pin_reading;        // keeps track if the reading is over
     int switch_high = HIGH;        // Here you can change the reading mode - standard is ACTIVE HIGH
@@ -57,7 +57,7 @@ Telemetry getGPS(SoftwareSerial &comm, TinyGPS &gps)
     {
         char c = comm.read();
         // Serial.write(c);         //uncomment this to se the raw output of gps info
-        if (gps.encode(c)) // Atribui true para newData caso novos dados sejam recebidos
+        if (gps.encode(c))          // Atribui true para newData caso novos dados sejam recebidos
             newData = true;
     }
     if (newData)
@@ -69,6 +69,7 @@ Telemetry getGPS(SoftwareSerial &comm, TinyGPS &gps)
         telemetry.speedkmph = gps.f_speed_kmph();                              // parse the speed into our struct
         telemetry.numSat = gps.satellites();                                   // parse the current number of sattelites that we are connected to
         telemetry.hdop = gps.hdop();                                           // parse the quality of signal
+        Serial.println(telemetry.hdop);
     }
     return telemetry;
 }

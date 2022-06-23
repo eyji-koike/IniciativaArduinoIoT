@@ -25,29 +25,29 @@ const int rs = 13,
           d6 = 9,
           d7 = 8,
           gpsRX = 6, // gps TX ==> Digital pin (D6)
-    gpsTX = 7,       // gps RX ==> Digital pin (D7)
+          gpsTX = 7,       // gps RX ==> Digital pin (D7)
     buttonEntrance = 5,
           buttonExit = 4,
           espRX = 2,   // esp TX ==> Digital pin (D2)
     espTX = 3,         // gps RX ==> Digital pin (D3)
     updateTime = 2000; // time between gps updates
-
 unsigned long frontCounter;
 unsigned long backCounter;
 static long startTime;
 bool firstRun;                // save the first setup condition
 const int serialBaud = 9600; // the speed of our connections
-// create our objects and struct
+///////////////////////////////////////////// create our objects and struct
 Telemetry newTelemetry;                    // our telemetry struct
 SoftwareSerial gpsSerial(gpsRX, gpsTX);    // define the ports to communicate with gps
-SoftwareSerial esp1(espRX, espTX);         // define the ports to communicate with esp
+SoftwareSerial esp1(espRX, espTX);         // define the ports to communicate with esp01
 TinyGPS gps;                               // our tinygps object gps
 SerialTransfer transferTel;                // our transferTel of type SerialTransfer
-LiquidCrystal lcd(rs, en, d4, d5, d6, d7); // our luqid crystal
+LiquidCrystal lcd(rs, en, d4, d5, d6, d7); // our liquid crystal lcd
 
 // setup run
 void setup()
 {
+    lcd.begin(16, 2);                // setup the correct info about our lcd scree, 16char and 2 lines
     firstRun = true;                 // flag ou first run
     pinMode(buttonEntrance, INPUT);  // set as input to read our button
     pinMode(buttonExit, INPUT);      // set as input to read our button
@@ -55,7 +55,6 @@ void setup()
     Serial.begin(serialBaud);        // start serial with computer
     gpsSerial.begin(serialBaud);     // start serial with gps
     transferTel.begin(esp1);         // start our transfer protocol
-    lcd.begin(16, 2);                // setup the correct info about our lcd scree, 16char and 2 lines
     startTime = millis();            // get the initial time
     newTelemetry = getGPS(gpsSerial, gps);
     Serial.print("Setup completed"); // Print it back to user
@@ -68,8 +67,8 @@ void loop()
     unsigned long currentMillis = millis();
     if (currentMillis - startTime > updateTime){
       newTelemetry = getGPS(gpsSerial, gps);  // get the gps info
-      Serial.print("Got gps\n");
-      Serial.print(newTelemetry.lat);
+      Serial.println("Got gps");
+      Serial.println(newTelemetry.lat);
       startTime = currentMillis;
     }
     bool frontButton = readSwitchDebounced(buttonEntrance); // read the button that represents the front
@@ -82,12 +81,14 @@ void loop()
         newTelemetry.entrance = 1;
         frontCounter++;
         Serial.print("Should have increased front counter\n");
+        frontButton = false;
         }
         else if (frontButton == false && backButton == true)
         {
         newTelemetry.exit = 1;
         backCounter++;
         Serial.print("Should have increased back counter\n");
+        backButton =false;
         }
         else
         {
@@ -96,6 +97,8 @@ void loop()
         frontCounter++;
         backCounter++;
         Serial.print("Should have increased both");
+        frontButton = false;
+        backButton =false;
         }
         // use this variable to keep track of how many
         // bytes we're stuffing in the transmit buffer
@@ -106,7 +109,6 @@ void loop()
         transferTel.sendData(sendSize);
         updateLCD(lcd, frontCounter, backCounter); // refresh our display
         }
- backButton =false;
- frontButton = false;
+ 
 }
      
