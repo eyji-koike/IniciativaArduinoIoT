@@ -16,37 +16,6 @@
 // Includes
 #include "UnoCustom.h"
 
-// This function is used to get a debounced input from button
-bool readSwitchDebounced(int buttonPin)
-{
-    bool switched = true;          // Keeps track of weather the button was switched or not
-    int switch_pin_reading;        // keeps track if the reading is over
-    int switch_high = HIGH;        // Here you can change the reading mode - standard is ACTIVE HIGH
-    int switch_low = !switch_high; // This setting should be the reverse of the one above
-    int debounce = 30;             // debounce time in ms
-    // static variables because we need to retain old values between function calls
-    static bool switch_pending = false;          // keep track of the reading status
-    static long int elapse_timer;                // initialize a timer
-    switch_pin_reading = digitalRead(buttonPin); // read the value on the pin
-    if (switch_pin_reading == switch_high)
-    {
-        // switch is pressed, so start/restart debounce process
-        switch_pending = true;
-        elapse_timer = millis(); // start elapse timing
-        return !switched;        // now waiting for debounce to conclude
-    }
-    if (switch_pending && switch_pin_reading == switch_low)
-    {
-        // switch was pressed, now released, so check if debounce time elapsed
-        if (millis() - elapse_timer > debounce)
-        {
-            // dounce time elapsed, so switch press cycle complete
-            switch_pending = false;
-            return switched;
-        }
-    }
-    return !switched;
-}
 
 // this function was made to get GPS information
 Telemetry getGPS(SoftwareSerial &comm, TinyGPS &gps)
@@ -86,15 +55,4 @@ void updateLCD(LiquidCrystal &lcd, unsigned long globalEntranceCounter, unsigned
     lcd.print(messageSecondLine + globalExitCounter);    // print message and the counter value
 }
 
-// this function was made to simplify the data transfer
-void sendTelemetry(Telemetry &telemetry, SerialTransfer &transfer)
-{
-    // use this variable to keep track of how many
-    // bytes we're stuffing in the transmit buffer
-    uint16_t sendSize = 0;
-    ///////////////////////////////////////// Stuff buffer with struct
-    sendSize = transfer.txObj(telemetry, sendSize);
-    ///////////////////////////////////////// Send buffer
-    transfer.sendData(sendSize);
-}
 

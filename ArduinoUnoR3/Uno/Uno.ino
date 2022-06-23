@@ -24,17 +24,16 @@ const int rs = 13,
           d5 = 10,
           d6 = 9,
           d7 = 8,
-          gpsRX = 6, // gps TX ==> Digital pin (D6)
-          gpsTX = 7,       // gps RX ==> Digital pin (D7)
-    buttonEntrance = 5,
+          gpsRX = 6,         // gps TX ==> Digital pin (D6)
+          gpsTX = 7,         // gps RX ==> Digital pin (D7)
+          buttonEntrance = 5,
           buttonExit = 4,
-          espRX = 2,   // esp TX ==> Digital pin (D2)
-    espTX = 3,         // gps RX ==> Digital pin (D3)
-    updateTime = 2000; // time between gps updates
-unsigned long frontCounter;
-unsigned long backCounter;
-static long startTime;
-bool firstRun;                // save the first setup condition
+          espRX = 2,         // esp TX ==> Digital pin (D2)
+          espTX = 3,         // gps RX ==> Digital pin (D3)
+          updateTime = 2000; // time between gps updates
+unsigned long frontCounter;  // front global counter
+unsigned long backCounter;   // back global counter
+static long startTime;       // timer
 const int serialBaud = 9600; // the speed of our connections
 ///////////////////////////////////////////// create our objects and struct
 Telemetry newTelemetry;                    // our telemetry struct
@@ -43,56 +42,72 @@ SoftwareSerial esp1(espRX, espTX);         // define the ports to communicate wi
 TinyGPS gps;                               // our tinygps object gps
 SerialTransfer transferTel;                // our transferTel of type SerialTransfer
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7); // our liquid crystal lcd
-DailyStruggleButton entrance;
-DailyStruggleButton exitB;
+DailyStruggleButton entrance;              // our daily struggle entrance button object
+DailyStruggleButton exitB;                 // our daily struggle exit button object
 
 // setup run
 void setup()
 {
     lcd.begin(16, 2);                // setup the correct info about our lcd scree, 16char and 2 lines
-    firstRun = true;                 // flag ou first run
+    lcd.setCursor(0,0);
+    lcd.print("Arduino IoT");
+    lcd.setCursor(0,1);
+    lcd.print("Press a btn to begin");
     esp1.begin(serialBaud);          // start serial with esp01
     Serial.begin(serialBaud);        // start serial with computer
     gpsSerial.begin(serialBaud);     // start serial with gps
     transferTel.begin(esp1);         // start our transfer protocol
     startTime = millis();            // get the initial time
-    newTelemetry = getGPS(gpsSerial, gps);
-    entrance.set(buttonEntrance, callbackEntrance);
-    exitB.set(buttonExit, callbackExit);
-    Serial.print("Setup completed"); // Print it back to user
-    
+    newTelemetry = getGPS(gpsSerial, gps);          // start our struct
+    entrance.set(buttonEntrance, callbackEntrance); // set our button entrance
+    exitB.set(buttonExit, callbackExit);            // set our button exit
+    Serial.println("Setup completed");              // Print it back to user
 }
 
 // main loop
 void loop()
 {   
-    entrance.poll();
-    exitB.poll();
-    unsigned long currentMillis = millis();
+    unsigned long currentCountFront = frontCounter; // take the current count value and save it somewhere else
+    unsigned long currentCountBack = backCounter;   // take the current count value and save it somewhere else
+    entrance.poll();                                // poll the entrance button (from the DailyStruggleButton library)
+    exitB.poll();                                   // poll the exit button 
+    unsigned long currentMillis = millis();         // get the current time
+    // check if it's time to update the GPS information
     if (currentMillis - startTime > updateTime){
-      newTelemetry = getGPS(gpsSerial, gps);  // get the gps info
-      Serial.println("Got gps");
-      Serial.println(newTelemetry.lat);
-      startTime = currentMillis;
+      newTelemetry = getGPS(gpsSerial, gps);        // get the gps info
+      // Serial.println("Got gps");                 // this was made to see if this was executing (the gps delay on cold boot killed me)
+      Serial.print(newTelemetry.lon);               // this was made to see if this was executing (the gps delay on cold boot killed me)      
+      Serial.print("|");                            // this was made to see if this was executing (the gps delay on cold boot killed me)
+      Serial.println(newTelemetry.lat);             // this was made to see if this was executing (the gps delay on cold boot killed me) 
+      startTime = currentMillis;                    // define the current time as the time we start
     }
-    bool frontButton = readSwitchDebounced(buttonEntrance); // read the button that represents the front
-    bool backButton = readSwitchDebounced(buttonExit);      // read the button that represents the back
     // if the front button was pressed, set it in the struct, send, and increase the counter
-    if (frontButton == true || backButton == true)
+    if (currentCountFront != frontCounter || currentCountBack != backCounter)
     {
-        // use this variable to keep track of how many
-        // bytes we're stuffing in the transmit buffer
-        uint16_t sendSize = 0;
-        ///////////////////////////////////////// Stuff buffer with struct
-        sendSize = transferTel.txObj(newTelemetry, sendSize);
-        ///////////////////////////////////////// Send buffer
-        transferTel.sendData(sendSize);
-        updateLCD(lcd, frontCounter, backCounter); // refresh our display
-        }
- 
+      if (currentCountFront != frontCounter){
+        newTelemetry.entrance = 1;
+        newTelemetry.exit = 0;
+      }
+      else if ( currentCountBack != backCounter){
+        newTelemetry.exit = 1;
+        newTelemetry.entrance =0;
+      }
+      updateLCD(lcd, frontCounter, backCounter); // refresh our display
+      // use this variable to keep track of how many
+      // bytes we're stuffing in the transmit buffer
+      Serial.println(newTelemetry.exit);        // this was made to see if this was executing (the gps delay on cold boot killed me)
+      Serial.println(newTelemetry.entrance);    // this was made to see if this was executing (the gps delay on cold boot killed me)
+      Serial.println(newTelemetry.course);      // this was made to see if this was executing (the gps delay on cold boot killed me)
+      Serial.println(newTelemetry.alt);         // this was made to see if this was executing (the gps delay on cold boot killed me)
+      uint16_t sendSize = 0;
+      ///////////////////////////////////////// Stuff buffer with struct
+      sendSize = transferTel.txObj(newTelemetry, sendSize);
+      ///////////////////////////////////////// Send buffer
+      transferTel.sendData(sendSize);
+    }
 }
      
-// callback
+// Entrance callback function
 void callbackEntrance(byte buttonEvent)
 {
     switch (buttonEvent)
@@ -104,6 +119,7 @@ void callbackEntrance(byte buttonEvent)
     }
 }
 
+//Exit callback function
 void callbackExit(byte buttonEvent)
 {
     switch (buttonEvent)

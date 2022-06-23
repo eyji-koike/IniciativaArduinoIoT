@@ -39,14 +39,9 @@ typedef struct Telemetry{
 
 };
 
-// This function is used to get a debounced input from button
-bool readSwitchDebounced(int buttonPin);
 
 //this functions was made to update the LCD within our request
 void updateLCD(LiquidCrystal &lcd, unsigned long globalEntranceCounter, unsigned long globalExitCounter);
-
-//this function was made to simplify the data transfer
-void sendTelemetry(Telemetry &telemetry, SerialTransfer &transfer);
 
 // this function was made to get GPS information
 Telemetry getGPS(SoftwareSerial &comm, TinyGPS &gps);
