@@ -4,7 +4,6 @@
 #include <SerialTransfer.h>
 #include <SPITransfer.h>
 
-#include <TinyGPS.h>
 
 /******************************************************************************
  * Copyright 2018 Google
@@ -37,19 +36,21 @@
 #include <CloudIoTCoreMqtt.h>
 #include "ciotc_config.h" // Wifi configuration here
 
-struct telemetry{
-  long entrance;
-  long exit;
-  long hdop;
-  float lat;
-  float lon;
-  float alt;
-  float course;
-  float speedkmph;
-  unsigned short numSat;
-  unsigned long date;
-  unsigned long time;
-  unsigned long fixAge;
+//define the structure of our telemetry
+typedef struct Telemetry{
+    long entrance;
+    long exit;
+    long hdop;
+    float lat;
+    float lon;
+    float alt;
+    float course;
+    float speedkmph;
+    unsigned short numSat;
+    unsigned long date;
+    unsigned long time;
+    unsigned long fixAge;
+
 };
 
 // !!REPLACEME!!

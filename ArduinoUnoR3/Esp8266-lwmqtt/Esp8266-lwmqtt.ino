@@ -43,51 +43,67 @@ void loop(){
 #define LED_BUILTIN 13
 #endif
 
-telemetry tel;
-SerialTransfer transfer;
+// here we create our objects
+Telemetry telemetry;      // Our telemetry object
+SerialTransfer transfer;  // Our transfer object
+bool readyToSend;         // flag if there is things to send
+
+// this is our callback that does stuff when there is a message available
+void callback(){
+  uint16_t recSize = 0;
+  recSize = transfer.rxObj(telemetry, recSize);
+  readyToSend = true;
+}
+
+// this is a constant required for allocation
+const functionPtr callbackArr[] = { callback };
+
+// here we do our setup
 void setup()
 {
   // put your setup code here, to run once:
-  Serial.begin(57600);
-  setupCloudIoT(); // Creates globals for MQTT
-  pinMode(LED_BUILTIN, OUTPUT);
-  transfer.begin(Serial);
+  Serial.begin(57600);            // hopefully here we are starting our transfer
+  setupCloudIoT();                // Creates globals for MQTT
+  pinMode(LED_BUILTIN, OUTPUT);   // blinks the esp led
+
+  // here we create our config object to pass to transfer
+  configST myConfig;
+  myConfig.debug = true;
+  myConfig.callbacks = callbackArr;
+  myConfig.callbacksLen = sizeof(callbackArr) / sizeof(functionPtr)
+  
+  // here we start our transfer with the callback
+  transfer.begin(Serial, myConfig);
 }
 
-static unsigned long lastMillis = 0;
+// main loop
 void loop()
 {
+  transfer.tick(); // poll the transfer to see if there is anything to send
+  // Check if we need to reconnect to MQTT
   if (!mqtt->loop())
   {
     mqtt->mqttConnect();
   }
-
   delay(10); // <- fixes some issues with WiFi stability
-  if (transfer.available()){
-    uint16_t recSize =0;
-
-    recSize = transfer.rxObj(tel, recSize);
- 
-  }
-  // TODO: Replace with your code here
-  if (millis() - lastMillis > 60000) {
-    lastMillis = millis();
-
+  // if we are ready to send, then parses the stuff on our payload
+  if (readyToSend == true) {
     String payload =
-      String("{\"Latitude\":") + tel.lat +
-      String(",\"Longitude\":")+ tel.lon +
-      String(",\"HDOP\":")+ tel.hdop +
-      String(",\"Altitude\":")+ tel.alt +
-      String(",\"Course\":")+ tel.course +
-      String(",\"Speed\":")+ tel.speedkmph +
-      String(",\"NumSat\":")+ tel.numSat +
-      String(",\"Date\":")+ tel.date +
-      String(",\"Time\":")+ tel.time + 
-      String(",\"fixAge\":")+ tel.fixAge +
-      String(",\"Entrance\":")+ tel.entrance +
-      String(",\"Exit\":")+ tel.exit +
+      String("{\"Latitude\":") + telemetry.lat +
+      String(",\"Longitude\":")+ telemetry.lon +
+      String(",\"HDOP\":")+ telemetry.hdop +
+      String(",\"Altitude\":")+ telemetry.alt +
+      String(",\"Course\":")+ telemetry.course +
+      String(",\"Speed\":")+ telemetry.speedkmph +
+      String(",\"NumSat\":")+ telemetry.numSat +
+      String(",\"Date\":")+ telemetry.date +
+      String(",\"Time\":")+ telemetry.time + 
+      String(",\"fixAge\":")+ telemetry.fixAge +
+      String(",\"Entrance\":")+ telemetry.entrance +
+      String(",\"Exit\":")+ telemetry.exit +
       String("}");
     publishTelemetry(payload);
+    readyToSend = false;
   }
   
 }
