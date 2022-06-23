@@ -23,7 +23,7 @@ bool readSwitchDebounced(int buttonPin)
     int switch_pin_reading;        // keeps track if the reading is over
     int switch_high = HIGH;        // Here you can change the reading mode - standard is ACTIVE HIGH
     int switch_low = !switch_high; // This setting should be the reverse of the one above
-    int debounce = 50;             // debounce time in ms
+    int debounce = 30;             // debounce time in ms
     // static variables because we need to retain old values between function calls
     static bool switch_pending = false;          // keep track of the reading status
     static long int elapse_timer;                // initialize a timer

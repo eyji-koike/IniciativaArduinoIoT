@@ -30,13 +30,13 @@ const int rs = 13,
           buttonExit = 4,
           espRX = 2,   // esp TX ==> Digital pin (D2)
     espTX = 3,         // gps RX ==> Digital pin (D3)
-    updateTime = 1000; // time between gps updates
+    updateTime = 2000; // time between gps updates
 
 unsigned long frontCounter;
 unsigned long backCounter;
 static long startTime;
 bool firstRun;                // save the first setup condition
-const int serialBaud = 57600; // the speed of our connections
+const int serialBaud = 9600; // the speed of our connections
 // create our objects and struct
 Telemetry newTelemetry;                    // our telemetry struct
 SoftwareSerial gpsSerial(gpsRX, gpsTX);    // define the ports to communicate with gps
@@ -56,54 +56,57 @@ void setup()
     gpsSerial.begin(serialBaud);     // start serial with gps
     transferTel.begin(esp1);         // start our transfer protocol
     lcd.begin(16, 2);                // setup the correct info about our lcd scree, 16char and 2 lines
-    Serial.print("Setup completed"); // Print it back to user
     startTime = millis();            // get the initial time
+    newTelemetry = getGPS(gpsSerial, gps);
+    Serial.print("Setup completed"); // Print it back to user
+    
 }
 
 // main loop
 void loop()
 {
-    unsigned long currentMillis = millis(); // get the current time
-    newTelemetry = getGPS(gpsSerial, gps);  // get the gps info
-    Serial.print("Got gps\n");
-    while (firstRun = false || currentMillis - startTime < updateTime)
-    {
-        // if we are on the first run or its time to update the gps we do it and get the time
-        firstRun = false;
-        startTime = currentMillis;                              // parse the current time for our control
-        bool frontButton = readSwitchDebounced(buttonEntrance); // read the button that represents the front
-        bool backButton = readSwitchDebounced(buttonExit);      // read the button that represents the back
-        // if the front button was pressed, set it in the struct, send, and increase the counter
-        if (frontButton == true || backButton == true)
-        {
-            if (frontButton == true && backButton == false)
-            {
-                newTelemetry.entrance = 1;
-                frontCounter++;
-                Serial.print("Should have increased front counter\n");
-            }
-            else if (frontButton == false && backButton == true)
-            {
-                newTelemetry.exit = 1;
-                backCounter++;
-                Serial.print("Should have increased back counter\n");
-            }
-            else
-            {
-                newTelemetry.entrance = 1;
-                newTelemetry.exit = 1;
-                frontCounter++;
-                backCounter++;
-                Serial.print("Should have increased both");
-            }
-            // use this variable to keep track of how many
-            // bytes we're stuffing in the transmit buffer
-            uint16_t sendSize = 0;
-            ///////////////////////////////////////// Stuff buffer with struct
-            sendSize = transferTel.txObj(newTelemetry, sendSize);
-            ///////////////////////////////////////// Send buffer
-            transferTel.sendData(sendSize);
-            updateLCD(lcd, frontCounter, backCounter); // refresh our display
-        }
+    unsigned long currentMillis = millis();
+    if (currentMillis - startTime > updateTime){
+      newTelemetry = getGPS(gpsSerial, gps);  // get the gps info
+      Serial.print("Got gps\n");
+      Serial.print(newTelemetry.lat);
+      startTime = currentMillis;
     }
+    bool frontButton = readSwitchDebounced(buttonEntrance); // read the button that represents the front
+    bool backButton = readSwitchDebounced(buttonExit);      // read the button that represents the back
+    // if the front button was pressed, set it in the struct, send, and increase the counter
+    if (frontButton == true || backButton == true)
+    {
+      if (frontButton == true && backButton == false)
+        {
+        newTelemetry.entrance = 1;
+        frontCounter++;
+        Serial.print("Should have increased front counter\n");
+        }
+        else if (frontButton == false && backButton == true)
+        {
+        newTelemetry.exit = 1;
+        backCounter++;
+        Serial.print("Should have increased back counter\n");
+        }
+        else
+        {
+        newTelemetry.entrance = 1;
+        newTelemetry.exit = 1;
+        frontCounter++;
+        backCounter++;
+        Serial.print("Should have increased both");
+        }
+        // use this variable to keep track of how many
+        // bytes we're stuffing in the transmit buffer
+        uint16_t sendSize = 0;
+        ///////////////////////////////////////// Stuff buffer with struct
+        sendSize = transferTel.txObj(newTelemetry, sendSize);
+        ///////////////////////////////////////// Send buffer
+        transferTel.sendData(sendSize);
+        updateLCD(lcd, frontCounter, backCounter); // refresh our display
+        }
+ backButton =false;
+ frontButton = false;
 }
+     

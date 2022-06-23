@@ -22,7 +22,7 @@
 #include "SerialTransfer.h"
 
 //define the structure of our telemetry
-struct Telemetry{
+typedef struct Telemetry{
     long entrance;
     long exit;
     long hdop;
