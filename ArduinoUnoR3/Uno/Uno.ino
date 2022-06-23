@@ -34,7 +34,7 @@ const int rs = 13,
 unsigned long frontCounter;  // front global counter
 unsigned long backCounter;   // back global counter
 static long startTime;       // timer
-const int serialBaud = 9600; // the speed of our connections
+const int serialBaud = 57600; // the speed of our connections
 ///////////////////////////////////////////// create our objects and struct
 Telemetry newTelemetry;                    // our telemetry struct
 SoftwareSerial gpsSerial(gpsRX, gpsTX);    // define the ports to communicate with gps
