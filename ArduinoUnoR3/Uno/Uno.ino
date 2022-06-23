@@ -43,20 +43,22 @@ SoftwareSerial esp1(espRX, espTX);         // define the ports to communicate wi
 TinyGPS gps;                               // our tinygps object gps
 SerialTransfer transferTel;                // our transferTel of type SerialTransfer
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7); // our liquid crystal lcd
+DailyStruggleButton entrance;
+DailyStruggleButton exitB;
 
 // setup run
 void setup()
 {
     lcd.begin(16, 2);                // setup the correct info about our lcd scree, 16char and 2 lines
     firstRun = true;                 // flag ou first run
-    pinMode(buttonEntrance, INPUT);  // set as input to read our button
-    pinMode(buttonExit, INPUT);      // set as input to read our button
     esp1.begin(serialBaud);          // start serial with esp01
     Serial.begin(serialBaud);        // start serial with computer
     gpsSerial.begin(serialBaud);     // start serial with gps
     transferTel.begin(esp1);         // start our transfer protocol
     startTime = millis();            // get the initial time
     newTelemetry = getGPS(gpsSerial, gps);
+    entrance.set(buttonEntrance, callbackEntrance);
+    exitB.set(buttonExit, callbackExit);
     Serial.print("Setup completed"); // Print it back to user
     
 }
@@ -76,30 +78,6 @@ void loop()
     // if the front button was pressed, set it in the struct, send, and increase the counter
     if (frontButton == true || backButton == true)
     {
-      if (frontButton == true && backButton == false)
-        {
-        newTelemetry.entrance = 1;
-        frontCounter++;
-        Serial.print("Should have increased front counter\n");
-        frontButton = false;
-        }
-        else if (frontButton == false && backButton == true)
-        {
-        newTelemetry.exit = 1;
-        backCounter++;
-        Serial.print("Should have increased back counter\n");
-        backButton =false;
-        }
-        else
-        {
-        newTelemetry.entrance = 1;
-        newTelemetry.exit = 1;
-        frontCounter++;
-        backCounter++;
-        Serial.print("Should have increased both");
-        frontButton = false;
-        backButton =false;
-        }
         // use this variable to keep track of how many
         // bytes we're stuffing in the transmit buffer
         uint16_t sendSize = 0;
@@ -112,3 +90,25 @@ void loop()
  
 }
      
+// callback
+void callbackEntrance(byte buttonEvent)
+{
+    switch (buttonEvent)
+    {
+    case onRelease:
+        frontCounter++;
+        Serial.println("Front");
+        break;
+    }
+}
+
+void callbackExit(byte buttonEvent)
+{
+    switch (buttonEvent)
+    {
+    case onRelease:
+        backCounter++;
+        Serial.println("Back");
+        break;
+    }
+}

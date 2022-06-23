@@ -20,6 +20,7 @@
 #include <TinyGPS.h>
 #include <LiquidCrystal.h>
 #include "SerialTransfer.h"
+#include <DailyStruggleButton.h>
 
 //define the structure of our telemetry
 typedef struct Telemetry{
@@ -49,3 +50,5 @@ void sendTelemetry(Telemetry &telemetry, SerialTransfer &transfer);
 
 // this function was made to get GPS information
 Telemetry getGPS(SoftwareSerial &comm, TinyGPS &gps);
+
+

@@ -97,3 +97,4 @@ void sendTelemetry(Telemetry &telemetry, SerialTransfer &transfer)
     ///////////////////////////////////////// Send buffer
     transfer.sendData(sendSize);
 }
+
