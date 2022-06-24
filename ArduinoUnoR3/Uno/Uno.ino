@@ -34,7 +34,7 @@ const int rs = 13,
 unsigned long frontCounter;  // front global counter
 unsigned long backCounter;   // back global counter
 static long startTime;       // timer
-const int serialBaud = 57600; // the speed of our connections
+const int serialBaud = 9600; // the speed of our connections
 ///////////////////////////////////////////// create our objects and struct
 Telemetry newTelemetry;                    // our telemetry struct
 SoftwareSerial gpsSerial(gpsRX, gpsTX);    // define the ports to communicate with gps
@@ -54,7 +54,7 @@ void setup()
     lcd.setCursor(0,1);
     lcd.print("Press to start");
     esp1.begin(serialBaud);          // start serial with esp01
-    Serial.begin(serialBaud);        // start serial with computer
+    Serial.begin(9600);              // start serial with computer
     gpsSerial.begin(serialBaud);     // start serial with gps
     transferTel.begin(esp1);         // start our transfer protocol
     startTime = millis();            // get the initial time

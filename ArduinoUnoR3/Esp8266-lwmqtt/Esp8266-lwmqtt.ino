@@ -26,7 +26,7 @@
 #include <Arduino.h>
 
 void setup(){
-  Serial.begin(115200);
+  Serial.begin(9600);
 }
 
 void loop(){
@@ -43,51 +43,18 @@ void loop(){
 #define LED_BUILTIN 13
 #endif
 
+using namespace std;
 // here we create our objects
 Telemetry telemetry;      // Our telemetry object
 SerialTransfer transfer;  // Our transfer object
 bool readyToSend;         // flag if there is things to send
 
 // this is our callback that does stuff when there is a message available
-void callback(){
+void hi(){
   uint16_t recSize = 0;
   recSize = transfer.rxObj(telemetry, recSize);
   readyToSend = true;
-}
-
-// this is a constant required for allocation
-const functionPtr callbackArr[] = { callback };
-
-// here we do our setup
-void setup()
-{
-  // put your setup code here, to run once:
-  Serial.begin(57600);            // hopefully here we are starting our transfer
-  setupCloudIoT();                // Creates globals for MQTT
-  pinMode(LED_BUILTIN, OUTPUT);   // blinks the esp led
-
-  // here we create our config object to pass to transfer
-  configST myConfig;
-  myConfig.debug = true;
-  myConfig.callbacks = callbackArr;
-  myConfig.callbacksLen = sizeof(callbackArr) / sizeof(functionPtr)
-  
-  // here we start our transfer with the callback
-  transfer.begin(Serial, myConfig);
-}
-
-// main loop
-void loop()
-{
-  transfer.tick(); // poll the transfer to see if there is anything to send
-  // Check if we need to reconnect to MQTT
-  if (!mqtt->loop())
-  {
-    mqtt->mqttConnect();
-  }
-  delay(10); // <- fixes some issues with WiFi stability
-  // if we are ready to send, then parses the stuff on our payload
-  if (readyToSend == true) {
+    if (readyToSend == true) {
     String payload =
       String("{\"Latitude\":") + telemetry.lat +
       String(",\"Longitude\":")+ telemetry.lon +
@@ -104,7 +71,38 @@ void loop()
       String("}");
     publishTelemetry(payload);
     readyToSend = false;
-  }
+}
+
+// this is a constant required for allocation
+const functionPtr callbackArr[] = { hi };
+
+// here we do our setup
+void setup()
+{
+  // put your setup code here, to run once:
+  Serial.begin(9600);            // hopefully here we are starting our transfer
+  setupCloudIoT();                // Creates globals for MQTT
+  pinMode(LED_BUILTIN, OUTPUT);   // blinks the esp led
+
+  // here we create our config object to pass to transfer
+  configST myConfig;
+  myConfig.debug = true;
+  myConfig.callbacks = callbackArr;
+  myConfig.callbacksLen = sizeof(callbackArr) / sizeof(functionPtr);
   
+  // here we start our transfer with the callback
+  transfer.begin(Serial, myConfig);
+}
+
+// main loop
+void loop()
+{
+  transfer.tick(); // poll the transfer to see if there is anything to send
+  // Check if we need to reconnect to MQTT
+  if (!mqtt->loop())
+  {
+    mqtt->mqttConnect();
+  }
+  delay(10); // <- fixes some issues with WiFi stability 
 }
 #endif
