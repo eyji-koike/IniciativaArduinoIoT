@@ -71,7 +71,9 @@ void hi(){
       String("}");
     publishTelemetry(payload);
     readyToSend = false;
+    }
 }
+
 
 // this is a constant required for allocation
 const functionPtr callbackArr[] = { hi };
