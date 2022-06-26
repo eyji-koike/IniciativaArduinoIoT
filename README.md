@@ -15,6 +15,21 @@ Esse projeto utiliza uma Arduino Uno r3 com módulos: WiFi esp01 baseado no chip
 O fluxo de informação vai ocorrer como representado na figura abaixo:  
 ![Fluxo de informação](./Assets/InformationFluxogram.png)
 
+**Lista de Materiais**
+
+* Arduino Uno R3
+* ESP01 8266
+* GPS Neo 6M
+* LCD 16x2
+* Adaptador ESP01 com regulador de voltagem e trocador de nível 
+* Potenciômetro 10kOhm
+* Adaptador usb-serial ch340 para esp01
+* Cabos jumper
+* 2 botoeiras
+* Fonte de alimentação 5v
+* Interruptor (opicional) 
+* Conta na Google Cloud Platform
+
 **Tabela de conteúdo**
 
 1. [Configurando a GCP](#configurando-a-gcp)
@@ -29,6 +44,7 @@ O fluxo de informação vai ocorrer como representado na figura abaixo:
     2. [Fluxograma de código do Arduino Uno](#fluxograma-de-código---arduino-uno)
     3. [Fluxograma do código da ESP01](#fluxograma-de-código---esp01)
     4. [Adaptando o código em C++](#adaptando-o-código-em-c)
+    5. [Conectando os componentes](#conectando-os-componentes)
 
 3. [Testando a transferência de dados](#testando-a-transferência-de-dados)
 
@@ -159,14 +175,57 @@ Se durante a instalação de alguma biblioteca uma mensagem de pop-up pedir a in
 
 No presente projeto, o Arduíno Uno funciona como um agregador de informação sensorial. Se algum botão foi pressionado durante o ciclo, o Uno busca definir qual botão foi pressionado para inserir em um *struct* que já contém as informações de GPS e é enviado para a ESP01 por uma porta Software Serial. O digrama de blocos fica da seguinte forma:
 
+![Diagrama de blocos](/Assets/FluxogramaPTBr.svg)
 
-
+A versão explodida do loop() pode ser encontrada [aqui](/Assets/MainLoopExplodedPTBr.svg) caso mais detalhes sejam necessários. O código pode ser encontrado [aqui](/BoardPrograms/Uno/).
 
 
 ### Fluxograma de código - ESP01
 
+O programa da ESP01 é relativamente mais simples. Quando o arduino Uno envia uma mensagem, a ESP01 aciona uma função que cria uma string no formato .JSON e envia para o PUB/SUB. A string tem o formato:
+
+```json
+ { 
+    "latitude": float,
+    "longitude": float,
+    "HDOP": long,
+    "Altitude": float, 
+    "Course": float,
+    "Speed": float, 
+    "NumSat": short, 
+    "Date": long,
+    "Time": long,
+    "fixAge": long,
+    "Entrance": long,
+    "Exit": long,
+ }
+```
+O fluxograma de código da ESP01 fica mais simples, como apresentado abaixo e o código pode ser encontrado [aqui](./BoardPrograms/Esp8266-lwmqtt/). 
+
+![FluxrogramaESP01](./Assets/ESP01.svg)
+
+Vale lembrar que para fazer o upload do código, a ESP01 deve estar em modo de Flash. Para conseguir isso, o pino GPIO01 deve estar conectado ao GND quando a placa é conectada a enegia. Sugerimos a adição de uma fiação com interruptor entre os pinos GND e GPIO01 para facilitar o momento de programar a ESP01 como representado simplisticamente na figura abaixo:
+
+![ESP01Flashmode](./Assets/Esp01FlashMode.png)
+
+Outra ferramenta que facilita bastante e foi utilizada neste projeto é o adaptador usb ch340 para esp01, mostrado na figura:
+
+![ESP01AdaptadorUSB](./Assets/ESP-8266-ESP-01-Adaptador-USB.jpg)  
+
 
 ### Adaptando o código em C++
+
+### Conectando os componentes  
+
+O projeto utiliza grande parte das portas digitais do Arduino Uno. O esquema de fiação fica no formato apresentado na imagem abaixo. 
+
+![Esquema de Fiação](/Assets/GY-NEO6MV2_bb.png)  
+
+Repare que nesta configuração, utilizamos um  conversor de nível logico e um regulador de voltagem pois a ESP01 funciona com 3.3v tanto para os sinais nos pinos quando como VCC. Isso pode ser simplificado com a utilização do adaptador na imagem abaixo.
+
+![Logic and voltage converter](/Assets/sku_404644_1.jpg)  
+
+
 
 ## Testando a transferência de dados
 
