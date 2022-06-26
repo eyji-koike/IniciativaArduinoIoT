@@ -13,7 +13,7 @@ Esse projeto utiliza uma Arduino Uno r3 com módulos: WiFi esp01 baseado no chip
 **Visão Geral**
 
 O fluxo de informação vai ocorrer como representado na figura abaixo:  
-![Fluxo de informação](https://github.com/eyji-koike/IniciativaArduinoIoT/blob/main/Assets/InformationFluxogram.png)
+![Fluxo de informação](./Assets/InformationFluxogram.png)
 
 **Tabela de conteúdo**
 
@@ -26,8 +26,9 @@ O fluxo de informação vai ocorrer como representado na figura abaixo:
 2. [Configurando o Arduino Uno r3 e a ESP01](#configurando-o-arduino-uno-r3-e-a-esp01)
 
     1. [Instalando as bibliotecas na arduino IDE](#instalando-as-bibliotecas-na-arduino-ide)
-    2. [Fluxograma da Função Main](#fluxograma-da-função-main)
-    3. [Adaptando o código em C++](#adaptando-o-código-em-c)
+    2. [Fluxograma de código do Arduino Uno](#fluxograma-de-código---arduino-uno)
+    3. [Fluxograma do código da ESP01](#fluxograma-de-código---esp01)
+    4. [Adaptando o código em C++](#adaptando-o-código-em-c)
 
 3. [Testando a transferência de dados](#testando-a-transferência-de-dados)
 
@@ -54,9 +55,9 @@ Primeiramente precisamos configar nomes para nossos serviços. Copie e cole as v
 ```shell
 export PROJECT_ID=      #insira o nome do projeto aqui
 export REGION=          #insira a regiao aqui
-export TOPIC_ID=        #insisra a ID do topico aqui
-export SUBSCRIPTION=    #insisra a subscricao aqui
-export REGISTRY=        #insisra o nome do registro aqui
+export TOPIC_ID=        #insira a ID do topico aqui
+export SUBSCRIPTION=    #insira a subscricao aqui
+export REGISTRY=        #insira o nome do registro aqui
 export DEVICE_ID=       #insira a identificacao do dispositivo
 ```
 Com seus nomes (ou identificões, se preferir) em mãos, podemos prosseguir para a próxima etapa. Crie um projeto com o mesmo nome que escolheu em **PROJECT_ID** e tenha certeza de que a Cobrança está ativada, caso contrário o Google não permitirá a criação das nossas ferramentas. Para fazer isso, basta acessar o Cloud Shell e procurar por "Cobrança" ou "Billing" no menu de sanduíche que fica no lado esquerdo da tela. 
@@ -118,16 +119,52 @@ gcloud iot devices create $DEVICE_ID \
 
 ### Easy way - script de automação
 
-Disponibilizamos um script shell para facilitar toda o setup da GCP para quem já entende da automação. 
+Disponibilizamos um script shell para facilitar toda o setup da GCP para quem já tem maior afinidade com shell scripts. Não esqueça de modificá-los, substituindo os campos de acordo com suas definições. Baixe o script [aqui](./GCP/GCPScript.sh), abra o **cloud shell**. Em seguida abra o editor, clique em *fazer upload* e escolha seu arquivo. Para rodar digite:
+```shell
+./GCPScript.sh
+```
 
 ## Configurando o Arduino Uno r3 e a ESP01
 
-Em nosso sistema, o Arduíno Uno é o responsável por realizar a coleta dos dados de telemetria, equanto a ESP01 ficará responsável por mandar a telemetria via MQTT, conectar-se ao Access Point Wi-Fi e conectar-se ao GCP.
+Em nosso sistema, o Arduíno Uno é o responsável por realizar a coleta dos dados de telemetria, equanto a ESP01 ficará responsável por mandar a telemetria via MQTT, conectar-se ao Access Point Wi-Fi e conectar-se ao GCP.  
+Para realizar todas essas funções existem duas opções de desenvolvimento. Criar suas próprias bibliotecas de funções ou utilizar as que estão disponíveis na comunidade Arduino.  
+A complexidade do projeto implicou na utilização de bibliotecas para otimizar o desenvolvimento do código de forma confiável. 
 
 
 ### Instalando as bibliotecas na arduino IDE
 
-### Fluxograma da função main
+Como vamos realizar a programação da ESP01 no mesmo formato do Arduino UNO, precisamos fazer a Arduino IDE reconhecer a placa. Abra a Arduino IDE e vá em preferências. No campo "gerenciador de placas adicionais", insira o link abaixo:
+
+```
+https://arduino.esp8266.com/stable/package_esp8266com_index.json
+```
+Após dar um ok, vá em ferramentas, placa e Gerenciador de Placas. Na nova janela que abrir, procure por esp8266 por esp8266 community e instale. Agora, toda a vez que quiser programar para a ESP01, vá no mesmo menu de placas, vá em esp8266 e procure por esp8266 generic module. 
+
+![ESP01Menu](./Assets/ESP01Menu.png)  
+
+Para instalar as bibliotecas necessárias, va em skecth > incluir bibliotecas > gerenciar bibliotecas. Na janela que abrir, precisamos instalar as seguinte lista:
+
+1. LiquidCrystal by Arduino
+2. WifiESP by Bruno Portaluri
+3. TinyGPS by Mikal Hart
+4. SerialTransfer by PowerBroker2
+5. MQTT by Joel Gaewhiler
+6. Google Cloud IoT Core JWT by Guss Class
+7. DailyStruggleButton by cygig
+
+Se durante a instalação de alguma biblioteca uma mensagem de pop-up pedir a instalação de módulos extra, permita que sejam instalados.
+
+
+### Fluxograma de código - Arduino UNO
+
+No presente projeto, o Arduíno Uno funciona como um agregador de informação sensorial. Se algum botão foi pressionado durante o ciclo, o Uno busca definir qual botão foi pressionado para inserir em um *struct* que já contém as informações de GPS e é enviado para a ESP01 por uma porta Software Serial. O digrama de blocos fica da seguinte forma:
+
+
+
+
+
+### Fluxograma de código - ESP01
+
 
 ### Adaptando o código em C++
 
