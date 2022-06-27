@@ -30,6 +30,7 @@ O fluxo de informação vai ocorrer como representado na figura abaixo:
 * Interruptor (opicional) 
 * Conta na Google Cloud Platform
 
+
 **Tabela de conteúdo**
 
 1. [Configurando a GCP](#configurando-a-gcp)
@@ -43,8 +44,8 @@ O fluxo de informação vai ocorrer como representado na figura abaixo:
     1. [Instalando as bibliotecas na arduino IDE](#instalando-as-bibliotecas-na-arduino-ide)
     2. [Fluxograma de código do Arduino Uno](#fluxograma-de-código---arduino-uno)
     3. [Fluxograma do código da ESP01](#fluxograma-de-código---esp01)
-    4. [Adaptando o código em C++](#adaptando-o-código-em-c)
-    5. [Conectando os componentes](#conectando-os-componentes)
+    4. [Conectando os componentes](#conectando-os-componentes)  
+    5. [Montagem Final](#montagem-final)
 
 3. [Testando a transferência de dados](#testando-a-transferência-de-dados)
 
@@ -204,7 +205,7 @@ O fluxograma de código da ESP01 fica mais simples, como apresentado abaixo e o 
 
 ![FluxrogramaESP01](./Assets/ESP01.svg)
 
-Vale lembrar que para fazer o upload do código, a ESP01 deve estar em modo de Flash. Para conseguir isso, o pino GPIO01 deve estar conectado ao GND quando a placa é conectada a enegia. Sugerimos a adição de uma fiação com interruptor entre os pinos GND e GPIO01 para facilitar o momento de programar a ESP01 como representado simplisticamente na figura abaixo:
+Vale lembrar que para fazer o upload do código, a ESP01 deve estar em modo de Flash. Para conseguir isso, o pino GPIO00 deve estar conectado ao GND quando a placa é conectada a enegia. Sugerimos a adição de uma fiação com interruptor entre os pinos GND e GPIO00 para facilitar o momento de programar a ESP01 como representado simplisticamente na figura abaixo:
 
 ![ESP01Flashmode](./Assets/Esp01FlashMode.png)
 
@@ -212,8 +213,6 @@ Outra ferramenta que facilita bastante e foi utilizada neste projeto é o adapta
 
 ![ESP01AdaptadorUSB](./Assets/ESP-8266-ESP-01-Adaptador-USB.jpg)  
 
-
-### Adaptando o código em C++
 
 ### Conectando os componentes  
 
@@ -226,6 +225,15 @@ Repare que nesta configuração, utilizamos um  conversor de nível logico e um 
 ![Logic and voltage converter](/Assets/sku_404644_1.jpg)  
 
 
+### Montagem Final
+
+No final, o projeto ficará como na imagem a seguir:
+
+![Visão Superior](/Assets/Vis%C3%A3oSuperior.jpeg)
+
+Visão frontal  
+
+![Visão Frontal](/Assets/Vis%C3%A3oFrontal.jpeg)  
 
 ## Testando a transferência de dados
 

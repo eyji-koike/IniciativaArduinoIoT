@@ -54,9 +54,4 @@ gcloud iot devices create $DEVICE_ID \
     --registry=$REGISTRY \
     --public-key="path=./ec_public.pem,type=es256"
 
-#realiza a criacao da funcao que e ativada quando uma mensagem e recebida pelo Pub/Sub
-#Essa funcao precisa ser modificada de acordo com o tipo de DB escolhido e o 
-#Codigo em python precisa ser levado ao cloud shell e tambem adaptado
-gcloud functions deploy iotcore_pubsub_to_influxdb --runtime python37 --trigger-topic $TOPIC_ID --region $REGION
-
 #fim
