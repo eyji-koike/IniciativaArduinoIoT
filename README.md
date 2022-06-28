@@ -176,7 +176,7 @@ Se durante a instalação de alguma biblioteca uma mensagem de pop-up pedir a in
 
 No presente projeto, o Arduíno Uno funciona como um agregador de informação sensorial. Se algum botão foi pressionado durante o ciclo, o Uno busca definir qual botão foi pressionado para inserir em um *struct* que já contém as informações de GPS e é enviado para a ESP01 por uma porta Software Serial. O digrama de blocos fica da seguinte forma:
 
-![Diagrama de blocos](/Assets/FluxogramaPTBr.svg)
+<img src="./Assets/Fluxograma.svg" height="75%" width="75%" />
 
 A versão explodida do loop() pode ser encontrada [aqui](/Assets/MainLoopExplodedPTBr.svg) caso mais detalhes sejam necessários. O código pode ser encontrado [aqui](/BoardPrograms/Uno/).
 
@@ -203,37 +203,36 @@ O programa da ESP01 é relativamente mais simples. Quando o arduino Uno envia um
 ```
 O fluxograma de código da ESP01 fica mais simples, como apresentado abaixo e o código pode ser encontrado [aqui](./BoardPrograms/Esp8266-lwmqtt/). 
 
-![FluxrogramaESP01](./Assets/ESP01.svg)
+<img src="./Assets/ESP01.svg" height="45%" width="45%"/>
 
 Vale lembrar que para fazer o upload do código, a ESP01 deve estar em modo de Flash. Para conseguir isso, o pino GPIO00 deve estar conectado ao GND quando a placa é conectada a enegia. Sugerimos a adição de uma fiação com interruptor entre os pinos GND e GPIO00 para facilitar o momento de programar a ESP01 como representado simplisticamente na figura abaixo:
 
-![ESP01Flashmode](./Assets/Esp01FlashMode.png)
+<img src="./Assets/Esp01FlashMode.png" height="30%" width="30%"/>
 
 Outra ferramenta que facilita bastante e foi utilizada neste projeto é o adaptador usb ch340 para esp01, mostrado na figura:
 
-![ESP01AdaptadorUSB](./Assets/ESP-8266-ESP-01-Adaptador-USB.jpg)  
-
+<img src ="./Assets/ESP-8266-ESP-01-Adaptador-USB.jpg" height="35%" width="35%"/>
 
 ### Conectando os componentes  
 
 O projeto utiliza grande parte das portas digitais do Arduino Uno. O esquema de fiação fica no formato apresentado na imagem abaixo. 
 
-![Esquema de Fiação](/Assets/GY-NEO6MV2_bb.png)  
+<img src="/Assets/GY-NEO6MV2_bb.png" height="75%" width="75%"/> 
 
 Repare que nesta configuração, utilizamos um  conversor de nível logico e um regulador de voltagem pois a ESP01 funciona com 3.3v tanto para os sinais nos pinos quando como VCC. Isso pode ser simplificado com a utilização do adaptador na imagem abaixo.
 
-![Logic and voltage converter](/Assets/sku_404644_1.jpg)  
+<img src="/Assets/sku_404644_1.jpg" height="45%" width="45%"/>
 
 
 ### Montagem Final
 
 No final, o projeto ficará como na imagem a seguir:
 
-![Visão Superior](/Assets/Vis%C3%A3oSuperior.jpeg)
+<img src="/Assets/Vis%C3%A3oSuperior.jpeg" height="55%" width="55%"/>
 
 Visão frontal  
 
-![Visão Frontal](/Assets/Vis%C3%A3oFrontal.jpeg)  
+<img src="/Assets/Vis%C3%A3oFrontal.jpeg" height="55%" width="55%"/>
 
 ## Testando a transferência de dados
 
