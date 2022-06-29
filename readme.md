@@ -224,10 +224,10 @@ Repare que nesta configuração, utilizamos um  conversor de nível logico e um 
 
 ### Montagem Final
 
-No final, o projeto ficará como na imagem a seguir:
+No final, o projeto ficará como na imagem a seguir:  
 <p align="middle">
-<img src="/Assets/Vis%C3%A3oSuperior.jpeg" height="47%" width="47%" align="center"/>
-<img src="/Assets/Vis%C3%A3oFrontal.jpeg" height="35%" width="35%" align="center"/>
+<img src="Assets/VisãoSuperior.jpeg" height="47%" width="47%" align="center"/>
+<img src="Assets/VisãoFrontal.jpeg" height="35%" width="35%" align="center"/>
 </p>
 
 ## Testando a transferência de dados
