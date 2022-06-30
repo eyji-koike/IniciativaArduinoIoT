@@ -29,6 +29,9 @@ O fluxo de informação vai ocorrer como representado na figura abaixo:
 * Fonte de alimentação 5v
 * Interruptor (opicional) 
 * Conta na Google Cloud Platform
+* [Node package manager](https://nodejs.org/en/)
+* [Microsoft VSCode](https://code.visualstudio.com/)
+* [Gcloud CLI](https://cloud.google.com/sdk/docs/install)
 
 
 **Tabela de conteúdo**
@@ -215,30 +218,92 @@ Vale lembrar que para fazer o upload do código, a ESP01 deve estar em modo de F
 
 O projeto utiliza grande parte das portas digitais do Arduino Uno. O esquema de fiação fica no formato apresentado na imagem abaixo.  
 <p align="middle">
-<img src="/Assets/GY-NEO6MV2_bb.png" height="75%" width="75%"  align="center"/> 
+<img src="./Assets/GY-NEO6MV2_bb.png" height="75%" width="75%"  align="center"/> 
 </p>
 Repare que nesta configuração, utilizamos um  conversor de nível logico e um regulador de voltagem pois a ESP01 funciona com 3.3v tanto para os sinais nos pinos quando como VCC. Isso pode ser simplificado com a utilização do adaptador na imagem abaixo.  
 <p align="middle">
-<img src="/Assets/sku_404644_1.jpg" height="35%" width="35%" align="center"/>
+<img src="./Assets/sku_404644_1.jpg" height="35%" width="35%" align="center"/>
 </p>
 
 ### Montagem Final
 
 No final, o projeto ficará como na imagem a seguir:
 <p align="middle">
-<img src="/Assets/Vis%C3%A3oSuperior.jpeg" height="47%" width="47%" align="center"/>
-<img src="/Assets/Vis%C3%A3oFrontal.jpeg" height="35%" width="35%" align="center"/>
+<img src="./Assets/Vis%C3%A3oSuperior.jpeg" height="51%" width="51%" align="center"/>
+<img src="./Assets/Vis%C3%A3oFrontal.jpeg" height="38%" width="38%" align="center"/>
 </p>
 
-## Testando a transferência de dados
+## Dados, dados e mais dados
+
+Com nosso hardware pronto e funcional, podemos nos preocupar com a funcionalidade do solução de backend, pois até o momento só criamos a infraestrutura. Existem formas de testar o IoT Core, porém isso inclui a utilização de um cliente MQTT na sua máquina, bem como a criação de um dispositivo, um token jwt e uso dos certificados e vai além do escopo. Para mais informações, utilize [este projeto](http://nilhcem.com/iot/cloud-iot-core-with-the-esp32-and-arduino) by @nilhcem, na parte de "connect to http/mqtt bridge". 
 
 ### Verificação do Cloud Pub/Sub
 
-## Routing e armazenamento de dados
+Ligue todos os aparelhos. Se tudo estiver certo, ao pressionar um botão o Arduino Uno mostrará a contagem no display, e a luz azul da ESP01 piscará indicando o recebimento da comunicação serial. Para verificarmos se a informação chegou no tópico Pub/Sub, abra o Google Cloud Console e navegue até o serviço Pub/Sub. Clique na ID de tópico que criou e uma nova tela apareçerá. Procure pelo nome da **$SUBSCRIPTION** que criou e clique. Para ver as mensagens, selecione a checkbox "Enable ack messages" e clique em **pull**. Agora poderá verificar se a mensagem chegou com sucesso no tópico. Sua tela paracerá com isso:
+
+<p align="middle">
+<img src="./Assets/PubSubTopicMessages.png" align="center"/>
+</p>
+
+Também é possivel utilizar a Cloud Shell. Para isso utilize o código abaixo. Esse comando funciona também na [Google Cloud CLI](https://cloud.google.com/sdk/docs/install-sdk).  
+
+```shell
+gcloud pubsub subscriptions pull --auto-ack $SUBSCRIPTION --limit=1
+```
+
+### Setup Firebase
+
+Perfeito. Com nossos dados chegando na nuvem, temos que persistí-los em algum lugar pois o Pub/Sub apaga as mensagens conforme o tempo passa. Para isso vamos criar uma armazenamento no [Firebase](https://firebase.google.com/). Entre no website e faça login com a mesma conta da GCP. Vá em adicionar novo projeto e na hora de selecionar um nome, selecione **PROJECT_ID** igual ao da GCP. Confirme o plano **blaze**, confirme novamente. No passo de Google Analytics, confirme que o switch está em ativado pois precisaremos deste serviço e aperte próximo. Na conta do Google Analytics, selecione a conta padrão e confime, adicionar Firebase.  
+Nosso projeto está configurado no Firebase, porém agora precisamos criar uma database Firestore e habilitar a cloud functions. No menu a esquerda, selecione Firestore Database e clique em criar database. Selecione o modo de teste, clique em próximo e na outra tela escolha uma região mais próxima da **REGION** escolhida para o projeto.
+
 
 ### Setup cloud functions
 
-### Setup DB
+Para construir nossa função, vamos utilizar o [node package manager](https://nodejs.org/en/), o microsoft [VSCode](https://code.visualstudio.com/) como IDE e precisaremos também do [gcloud CLI](https://cloud.google.com/sdk/docs/install). Utilize os links para instalar e configurar tudo na sua máquina. Em seguida instale os itens do Firebase com o comando:
+
+```shell
+npm install -g firebase-tools
+```
+Agora, crie um diretório para nosso projeto, entre na pasta e inicie um projeto de functions:
+
+```shell
+mkdir meuProjeto
+cd meuProjeto
+firebase init functions
+```
+Utilize as setas para escolher "Use an existing project", depois selecione o nome do projeto da Google Cloud e, escolha TypeScript. Ainda temos mais umas perguntas para responder. Quando o menu perguntar sobre ESLint digite "n". Quando pergutar "Do you want to install dependencies?" digite "y" e em seguida digite o comando abaixo para abrir o projeto no VSCode
+```
+. code
+```
+Com o projeto aberto no VSCode, va na pasta **src** e abra o arquivo **index.ts**. Agora temos duas opções, é possível copiar e colar o código [deste link](./GCP/TSCloudFunction/index.ts) ou baixar o arquivo e substituir na pasta src. Modificação nas funções é possível para que atenda melhor ao caso de uso.
+Utilize os comandos abaixo para entrar na sua conta da GCP e confirmar que está trabalhando no projeto correto:
+```shell
+gcloud auth login 
+# abrirá o navegador para fazer login
+
+gcloud projects list 
+# mostra os projetos disponíveis
+
+gcloud config set project $PROJECT_ID 
+# adiciona o projeto atual (substitua o PROJECT_ID com o nome do projeto)
+```
+
+ Para finalizar, vamos utilizar o comando abaixo para fazer upload da nossa função:
+
+```shell
+firebase deploy --only functions
+```
+
+Para verificar se está tudo correto, pressione alguma das botoeiras novamente ou publique uma mensagem no pubsub como:
+
+```shell
+gcloud pubsub topics publish $TOPIC_ID --message='Catracat02-connected' --attribute='deviceId=Catraca02,subFolder=events'
+
+# ou
+
+gcloud pubsub topics publish $TOPIC_ID --message='{"Latitude":-29.19,"Longitude":-51.24,"HDOP":159,"Altitude":724.30,"Course":0.00,"Speed":0.00,"NumSat":6,"Date":2012479491,"Time":131006486,"fixAge":0,"Entrance":1,"Exit":0}' --attribute='deviceId=Catraca02'
+```
+Erros e eventos são listados no menu "Functions" na aba heatlh e logs.
 
 ## Construção da dashboard
 
