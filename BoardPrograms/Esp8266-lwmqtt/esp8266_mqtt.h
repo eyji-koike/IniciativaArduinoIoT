@@ -1,10 +1,3 @@
-#include <I2CTransfer.h>
-#include <Packet.h>
-#include <PacketCRC.h>
-#include <SerialTransfer.h>
-#include <SPITransfer.h>
-
-
 /******************************************************************************
  * Copyright 2018 Google
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,18 +13,19 @@
  * limitations under the License.
  *****************************************************************************/
 // This file contains static methods for API requests using Wifi / MQTT
-
-#include <ESP8266WiFi.h>
-#include "FS.h"
-
 // You need to set certificates to All SSL cyphers and you may need to
 // increase memory settings in Arduino/cores/esp8266/StackThunk.cpp:
 //   https://github.com/esp8266/Arduino/issues/6811
 #include "WiFiClientSecureBearSSL.h"
 #include <time.h>
-
+#include <ESP8266WiFi.h>
+#include "FS.h"
 #include <MQTT.h>
-
+#include <I2CTransfer.h>
+#include <Packet.h>
+#include <PacketCRC.h>
+#include <SerialTransfer.h>
+#include <SPITransfer.h>
 #include <CloudIoTCore.h>
 #include <CloudIoTCoreMqtt.h>
 #include "ciotc_config.h" // Wifi configuration here
