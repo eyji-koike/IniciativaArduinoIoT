@@ -50,16 +50,14 @@ O fluxo de informação vai ocorrer como representado na figura abaixo:
     4. [Conectando os componentes](#conectando-os-componentes)  
     5. [Montagem Final](#montagem-final)
 
-3. [Testando a transferência de dados](#testando-a-transferência-de-dados)
+3. [Dados, dados e mais dados](#dados,-dados-e-mais-dados)
 
     1. [Verificação do Cloud Pub/Sub](#verificação-do-cloud-pubsub)
-
-4. [Routing e armazenamento de dados](#routing-e-armazenamento-de-dados)
-
+    2. [Routing e armazenamento de dados](#routing-e-armazenamento-de-dados)
     1. [Setup cloud functions](#setup-cloud-functions)
     2. [Setup DB](#setup-db)
 
-5. [Construção da dashboard](#construção-da-dashboard)
+4. [Construção da dashboard](#construção-da-dashboard)
 
     1. [*decidir ferramenta*](#decidir-ferramenta)
 
