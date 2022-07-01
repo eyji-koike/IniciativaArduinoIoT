@@ -43,12 +43,11 @@ exports.insertFromPubSub = functions.pubsub.topic('ColetasCatraca').onPublish((m
         "Course": 0.00, 
         "Speed": 0.00, 
         "NumSat": 0, 
-        "Date": 0, 
         "Time": 0, 
-        "fixAge": 0, 
         "Entrance": 0, 
         "Exit": 0,
-        "DeviceID": ''
+        "DeviceID": '',
+        "Timestamp": ''
     };
     // initialize the flag to tell us if the message was json data or just a connection
     let isMessage: boolean = false;
@@ -62,26 +61,26 @@ exports.insertFromPubSub = functions.pubsub.topic('ColetasCatraca').onPublish((m
             "Course": message.json.Course,
             "Speed": message.json.Speed,
             "NumSat": message.json.NumSat,
-            "Date": message.json.Date,
             "Time": message.json.Time,
-            "fixAge": message.json.fixAge,
             "Entrance": message.json.Entrance,
             "Exit": message.json.Exit,
-            "DeviceID": message.attributes.deviceId
+            "DeviceID": message.attributes.deviceId,
+            "Timestamp": context.timestamp
         };
         // so it looks like it was indeed a json
-        console.log('The message is in json format. Message body: ', catracaInfo);
+        console.log('The message is in json format.');
         // signalize it
         isMessage = true;
     } catch (e) {
         // damn, it was just a connection message
-        console.log('The message wasn\'t a JSON. Invalid JSON.');
+        console.log('Invalid JSON.');
     };
     // we need to instantiate ou stats object in case it wasn't a json
     var stats = {
         'device': '',
         'type': '',
-        'status': "connected"
+        'status': "connected",
+        'timestamp': ''
     };
     // look at the flag, was it json?
     if (isMessage == true) {
@@ -105,18 +104,20 @@ exports.insertFromPubSub = functions.pubsub.topic('ColetasCatraca').onPublish((m
                 stats = {
                     'device': deviceID,
                     'type': messageSubfolder,
-                    'status': "connected"
+                    'status': "connected",
+                    'timestamp': context.timestamp
+
                 };
             } catch (e) {
                 // ok, it wasn't a connection. This shouldn't happen so search for malformed stuff
-                console.log("Message wasn't a connection either. Please se the error presented on the log file.");
+                console.log("Message wasn't a connection either. Please see the error presented on the log file.");
             };
             // everything went ok, let publish our stats
             return admin.firestore().collection('stats').add(stats);
         } catch (e) {
             // damn, we couldn't publish anything... look for malformed stuff
             // send the error log to the logger on our project
-            functions.logger.error("Couldn't publish anything. ", e);
+            functions.logger.error("Couldn't publish anything. Error message: ", e);
         }//end try catch
     }//end else
 
