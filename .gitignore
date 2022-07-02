@@ -1,2 +1,12 @@
 .vscode/
 
+GCP/PythonCloudFunction/.idea/.gitignore
+GCP/PythonCloudFunction/.idea/misc.xml
+.gitignore
+GCP/PythonCloudFunction/.idea/modules.xml
+GCP/PythonCloudFunction/.idea/PythonCloudFunction.iml
+GCP/PythonCloudFunction/.idea/vcs.xml
+GCP/PythonCloudFunction/.idea/inspectionProfiles/profiles_settings.xml
+GCP/PythonCloudFunction/.idea/inspectionProfiles/Project_Default.xml
+.DS_Store
+.DS_Store
