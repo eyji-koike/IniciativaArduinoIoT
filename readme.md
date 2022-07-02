@@ -53,9 +53,10 @@ O fluxo de informação vai ocorrer como representado na figura abaixo:
 3. [Dados, dados e mais dados](#dados,-dados-e-mais-dados)
 
     1. [Verificação do Cloud Pub/Sub](#verificação-do-cloud-pubsub)
-    2. [Routing e armazenamento de dados](#routing-e-armazenamento-de-dados)
-    1. [Setup cloud functions](#setup-cloud-functions)
-    2. [Setup DB](#setup-db)
+    2. [Setup Firebase](#setup-firebase)
+    3. [Setup cloud functions - Typescript](#setup-cloud-functions---typescript)
+    4. [Setup cloud functions - Python](#setup-cloud-functions---python) 
+    5. [Verificando o funcionamento da Cloud Function](#verificando-o-funcionamento-da-cloud-function) 
 
 4. [Construção da dashboard](#construção-da-dashboard)
 
@@ -173,7 +174,7 @@ Para instalar as bibliotecas necessárias, va em skecth > incluir bibliotecas > 
 Se durante a instalação de alguma biblioteca uma mensagem de pop-up pedir a instalação de módulos extra, permita que sejam instalados.
 
 
-### Fluxograma de código - Arduino UNO
+### Fluxograma de código - Arduino Uno
 
 No presente projeto, o Arduíno Uno funciona como um agregador de informação sensorial. Se algum botão foi pressionado durante o ciclo, o Uno busca definir qual botão foi pressionado para inserir em um *struct* que já contém as informações de GPS e é enviado para a ESP01 por uma porta Software Serial. O digrama de blocos fica da seguinte forma:
 <p align="middle">
@@ -255,14 +256,14 @@ Perfeito. Com nossos dados chegando na nuvem, temos que persistí-los em algum l
 Nosso projeto está configurado no Firebase, porém agora precisamos criar uma database Firestore e habilitar a cloud functions. No menu a esquerda, selecione Firestore Database e clique em criar database. Selecione o modo de teste, clique em próximo e na outra tela escolha uma região mais próxima da **REGION** escolhida para o projeto.
 
 
-### Setup cloud functions
+### Setup cloud functions - Typescript
 
 Para construir nossa função, vamos utilizar o [node package manager](https://nodejs.org/en/), o microsoft [VSCode](https://code.visualstudio.com/) como IDE e precisaremos também do [gcloud CLI](https://cloud.google.com/sdk/docs/install). Utilize os links para instalar e configurar tudo na sua máquina. Em seguida instale os itens do Firebase com o comando:
 
 ```shell
 npm install -g firebase-tools
 ```
-Agora, crie um diretório para nosso projeto, entre na pasta e inicie um projeto de functions:
+Agora no seu computador, crie um diretório para nosso projeto, entre na pasta e inicie um projeto de functions:
 
 ```shell
 mkdir meuProjeto
@@ -291,7 +292,36 @@ gcloud config set project $PROJECT_ID
 ```shell
 firebase deploy --only functions
 ```
+### Setup cloud functions - Python
 
+A função que publica dados no *Firebase* pode ser feita também em python. A função fica mais simples e mais fácil de manter. Para começar, encontre o serviço *Cloud Functions* no console. No seu computador, crie uma pasta para o projeto usando os comandos
+
+```shell
+mkdir $PROJECT_ID
+# nome do seu projeto
+
+cd $PROJECT_ID
+# entra na pasta do projeto
+
+. code
+# abre o VSCODE na pasta do projeto
+
+```
+
+Uma função python precisa de dois arquivos. Crie um arquivo *main.py* e um arquivo *requirements.txt*. No arquivo requirements, digite o seguinte:
+
+```
+google-cloud-firestore>=2.1.3
+```
+
+Isso configura que a versão mínima da biblioteca *Firestore* que presisa estar presente é a *`'2.1.3'`*.
+Agora, você pode editar a *main.py*. Você pode copiar e colar, ou baixar o arquivo deste [link](./GCP/PythonCloudFunction/main.py) e substituir na pasta. Modifique de acordo com a necessidade. Para realizar o deployment utilize o seguinte commando:
+
+```shell
+gcloud functions deploy NOME_DA_FUNCAO --runtime python39 --trigger-topic $TOPIC_ID
+```
+
+### Verificando o funcionamento da Cloud Function  
 Para verificar se está tudo correto, pressione alguma das botoeiras novamente ou publique uma mensagem no pubsub como:
 
 ```shell
