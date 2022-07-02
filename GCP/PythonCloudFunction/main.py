@@ -23,7 +23,7 @@ from firebase_admin import firestore
 from google.cloud import firestore
 
 # now, stantiate what project we are working on
-client = firestore.Client(project='arduinoiotbackend')
+client = firestore.Client(project='Insert your Project ID Here')
 
 
 # here we define the name of our function. This has to be the same when we deploy the function throught command line
