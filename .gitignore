@@ -10,3 +10,5 @@ GCP/PythonCloudFunction/.idea/inspectionProfiles/profiles_settings.xml
 GCP/PythonCloudFunction/.idea/inspectionProfiles/Project_Default.xml
 .DS_Store
 .DS_Store
+GCP/PythonCloudFunction/env/lib/python3.10/site-packages/__pycache__/six.cpython-310.pyc
+.DS_Store
