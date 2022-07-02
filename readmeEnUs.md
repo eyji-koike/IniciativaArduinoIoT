@@ -9,7 +9,7 @@ Implementation project of 4.0 workshops at [IFRS Campus Caxias do Sul](https://i
 
 ## Abstract  
 
-This project uses an Arduino Uno r3 with: WiFi esp01 based on the esp8266 chip, GPS, and two buttons. The transmission protocol used is **[Mosquito (MQTT)](https://mosquitto.org/)** and our backend is made on **[Google Cloud Platform](https://cloud.google.com/)** using the services IoT Hub, and PUB/SUB. For our data retention, we use a google cloud function that is triggered whenever a new publish PUB/SUB event happens, and sends the received data to [Google Firebase](https://firebase.google.com/).
+This project uses an Arduino Uno r3 with WiFi esp01 based on the esp8266 chip, GPS, and two buttons. The transmission protocol used is **[Mosquito (MQTT)](https://mosquitto.org/)** and our backend is made on **[Google Cloud Platform](https://cloud.google.com/)** using the services [IoT Core](https://cloud.google.com/blog/topics/developers-practitioners/what-cloud-iot-core), and [PUB/SUB](https://cloud.google.com/pubsub). For our data retention, we use a [Google Cloud Functions](https://cloud.google.com/functions) that is triggered whenever a new publish PUB/SUB event happens, and sends the received data to [Google Firebase](https://firebase.google.com/).
 
 >***Disclaimer***  
 *This project may incur charges and the authors are not responsible. Do it under your full awareness and read the available material carefully. Have a Good learning experience.*
@@ -41,7 +41,7 @@ The figure below represents our data flux, with the services used.
 
 **Table of Contents**
 
-1. [Configuring GCP](#configurando-a-gcp)
+1. [Configuring GCP](#configuring-gcp)
     
     1. [Setup IoT Core](#setup-iot-core)
     2. [Setup Cloud Pub/Sub](#setup-cloud-pubsub)
@@ -55,58 +55,57 @@ The figure below represents our data flux, with the services used.
     4. [Wiring](#conectando-os-componentes)  
     5. [Final assembly](#montagem-final)
 
-3. [Testando a transferência de dados](#testando-a-transferência-de-dados)
+3. [Data, data, and more data](#testando-a-transferência-de-dados)
 
-    1. [Verificação do Cloud Pub/Sub](#verificação-do-cloud-pubsub)
+    1. [Review Cloud Pub/Sub](#verificação-do-cloud-pubsub)
+    2. [Setup Firebase](#routing-e-armazenamento-de-dados)
+    3. [Setup cloud functions - Typescript](#setup-cloud-functions)
+    4. [Setup cloud functions - Python](#setup-db)
+    5. [Testing the cloud function]()
 
-4. [Routing e armazenamento de dados](#routing-e-armazenamento-de-dados)
+5. [Building the Dashboard](#construção-da-dashboard)
 
-    1. [Setup cloud functions](#setup-cloud-functions)
-    2. [Setup DB](#setup-db)
+    1. [*find a suitable tool*](#decidir-ferramenta)
 
-5. [Construção da dashboard](#construção-da-dashboard)
+6. [Hybrid app integration](#integraçao-com-aplicativo-móvel)
 
-    1. [*decidir ferramenta*](#decidir-ferramenta)
-
-6. [Integraçao com aplicativo Móvel](#integraçao-com-aplicativo-móvel)
-
-    1. [Desenvolvimento Ionic](#desenvolvimento-ionic)
+    1. [Ionic](#desenvolvimento-ionic)
 ---
 
-## Configurando a GCP
+## Configuring GCP
 
-A Google oferece vários serviços de cloud hosting nas mais variadas modalidades. Para mais informações sobre o free tier, acesse [este link](https://cloud.google.com/free/docs/gcp-free-tier#free-tier). A configuração pode ser feita utilizando os menus, ou utilizando o shell. Há também um script que pode ser adaptado para tornar o provisionamento de estrutura automático.  
-Primeiramente precisamos configar nomes para nossos serviços. Copie e cole as variáveis abaixo no seu bloco de notas, e preencha com o valor que achar adequado para seu projeto. Depois do preenchimento essas variáveis podem ser coladas diretamente no cloud shell, ou você pode utilizá-las como guia para preencher os campos nos menus do Google Cloud Console.  
+Google offers many services in various ways. For more billing information on their free tier, click on [this link](https://cloud.google.com/free/docs/gcp-free-tier#free-tier). The configuration can be done utilizing the user interface, called console, or a command line interface as a free service called cloud shell. There is also a script at the end of this section, made for those who know how to execute it and make everything automaticaly. 
+Firstly we need to configure names for our stuff. Copy and paste the variables below on a notepad and fill it with what you find suitable. If you are going to use cloud shell, copy the filled version onto it but don't delete your file, as we are using it troughtout all the development. 
+
 ```shell
-export PROJECT_ID=      #insira o nome do projeto aqui
-export REGION=          #insira a regiao aqui
-export TOPIC_ID=        #insira a ID do topico aqui
-export SUBSCRIPTION=    #insira a subscricao aqui
-export REGISTRY=        #insira o nome do registro aqui
-export DEVICE_ID=       #insira a identificacao do dispositivo
+export PROJECT_ID=      #fill with your project name
+export REGION=          #choose a region
+export TOPIC_ID=        #name of your pubsub topic
+export SUBSCRIPTION=    #name of your pubsub subscription
+export REGISTRY=        #name of your iot core regitry
+export DEVICE_ID=       #iot device id
 ```
-Com seus nomes (ou identificões, se preferir) em mãos, podemos prosseguir para a próxima etapa. Crie um projeto com o mesmo nome que escolheu em **PROJECT_ID** e tenha certeza de que a Cobrança está ativada, caso contrário o Google não permitirá a criação das nossas ferramentas. Para fazer isso, basta acessar o Cloud Shell e procurar por "Cobrança" ou "Billing" no menu de sanduíche que fica no lado esquerdo da tela. 
+With everything on hand we can go to the next step. Create a project utilizing your **PROJECT_ID** and be sure to check if billing is activated, otherwise you will be prevente from proceeding when deploying any kind of service. To do that go to google cloud console and search for "billing" in the search bar.
 
-Para ativar os serviços necessários, va no menu à esquerda e selecione "APIs". No novo painel, aperte em adicionar serviços e APIs. Procure e ative **Cloud IoT, Pub/Sub e Cloud Functions**. Se quiser utilizar o shell, use o comando abaixo.  
+To activate the necessary services, go to the menu at your top-left and find "APIs". Click on "add services and APIs", and then search and activate the following **IoT core, Pub/Sub, and Cloud Functions. If you are using shell, paste the following:
 ```shell
 gcloud services enable cloudiot.googleapis.com pubsub.googleapis.com cloudfunctions.googleapis.com
 ```  
-Antes de iniciar a configuração dos serviços é necessário criar um conta para o serviço Cloud IoT pode publicar no PUB/SUB. Para isso, pesquise no menu por 
-"IAM & Admin" e em IAM, aperte em "Adicionar". No primeiro campo, coloque o emails da nossa conta interna de serviço *cloud-iot@system.gserviceaccount.com* e em "Função" encontre a **Cloud PUB/SUB Publicador** e salve. Se estiver no Shell, use o comando abaixo.
+Before setting up the services, you need to create a service account to give IoT Core the permissions to publish into a Pub/Sub Topic. Search for "IAM & Admin" and when inside IAM, press "Add". On the first field, insert the following email *cloud-iot@system.gserviceaccount.com* and on the field "Function" search for **Cloud PUB/SUB Publish** and then hit save. If you are using shell, this will do it:
 ```shell
 gcloud projects add-iam-policy-binding $PROJECT_ID \
     --member=serviceAccount:cloud-iot@system.gserviceaccount.com \
     --role=roles/pubsub.publisher
 ```  
-Também precisamos criar uma chave elíptica privada e uma pública de 256bits para autenticar nosso dispositivo. Aqui recomendamos que utilize o cloud shell pois também armazenamos ela no projeto.  
+To proceed, one will need an eliptic curve key pair with 256bits to authenticate the device. Now, it's easier to use cloud shell for that:
 ```shell
 openssl ecparam -genkey -name prime256v1 -noout -out ec_private.pem
 openssl ec -in ec_private.pem -pubout -out ec_public.pem
 ```
-Agora vá em "Abrir editor" e ache suas chaves. Abra-as no editor e copie e cole em um arquivo de texto em lugar seguro para sua consulta posterior.   
+This will create two keys and save them in the cloud editor. Open the editor and find your keys. Open them, copy and paste into a temporary file for later. If you are using the shell you don't need to do this. 
 
->***Importante***  
->**Não compartilhe suas chaves com ninguém. Isso representa um risco a segurança e integridade do seu projeto.**  
+>***Important***  
+>**Don't share your keys with anyone. This represents a security risk to the integrity of your project.**  
 ### Setup Cloud Pub/Sub  
 
 **Utilizando os menus**  
@@ -123,18 +122,18 @@ gcloud iot registries create $REGISTRY \
 
 ### Setup IoT Core
 
-**Utilizando os menus**  
-Para criar um [IoT Core](https://cloud.google.com/blog/topics/developers-practitioners/what-cloud-iot-core), pesquise na caixa do GCP por "IoT Core" ou role o menu em sanduíche até encontrar o serviço. Sua tela provavelmente estará em branco, então aperte no botão "Criar um registro". No novo menu que aparecerá, em "ID do registro", coloque o nome definido anteriormente em **REGISTRY**, selecione a região definida em **REGION** (a dica é tentar deixar todos os seus serviços em uma única região ou regiões próximas. Para finalizar a configuração basta selecionar o tópico do menu Cloud Pub/Sub no qual deseja publicar as mensagens do dispositivo. Após criar o registro, va no menu "Dispositivos" e clique em "criar novo dispositivo". Adicione o nome desejado do seu dispositivo, que foi definido em **DEVICE_ID**. Abra as opções avançadas e role até autenticação. Coloque como método de entrada "Digitar manualmente" e para o formato selecione ES256. Logo abaixo, cole exatamente como copiou, incluíndo ---BEGIN PUBLIC KEY--- no começo e ---END PUBLIC KEY--- no final.
+**Using the GUI**  
+To create a [IoT Core](https://cloud.google.com/blog/topics/developers-practitioners/what-cloud-iot-core), use the searchbox to look for "IoT Core" or browse the menu until you find it. When you opend it, your screen will probably be blank. Press "create registry". On the new page, type the registry name into **REGISTRY**, select the **REGION** (hint: try to leave all of them close to each other). To end the configuration, select the Cloud Pub/Sub topic that you wish to publish the device messages. After creating the registry, go in *devices* and click on "Create new Device". Add the **DEVICE_ID** on the name field. Now, open the advanced options and roll until you find "Authentication". Select "type manually" and for the format select ES256. Below that, copy and paste everthing including the ---BEGIN PUBLIC KEY--- and ---END PUBLIC KEY--- at the end.
 
-**Utilizando o Shell**  
-Para criar o IoT Core utilizando o shell, siga os seguintes comandos:  
+**Using Shell**  
+To create an IoT Core using shell:  
 ```shell
 gcloud iot registries create $REGISTRY \
     --region=$REGION \
     --event-notification-config=topic=$TOPIC_ID \
     --enable-mqtt-config --enable-http-config
  ```
-Para criar um dispositivo no nosso registro, utilize os comandos:  
+To create a device:  
 ```shell
 gcloud iot devices create $DEVICE_ID \
     --region=$REGION \
@@ -142,14 +141,14 @@ gcloud iot devices create $DEVICE_ID \
     --public-key="path=./ec_public.pem,type=es256"
 ```
 
-### Easy way - script de automação
+### Easy way - bash script
 
-Disponibilizamos um script shell para facilitar toda o setup da GCP para quem já tem maior afinidade com shell scripts. Não esqueça de modificá-los, substituindo os campos de acordo com suas definições. Baixe o script [aqui](./GCP/GCPScript.sh), abra o **cloud shell**. Em seguida abra o editor, clique em *fazer upload* e escolha seu arquivo. Para rodar digite:
+We made a shell script to make it easy to deploy all of the above infrastructure. Don't forget to modify it to suit your needs. Download it [here](./GCP/GCPScript.sh), and open **cloud shell**. Now open editor and hit "upload file". To run it:
 ```shell
 ./GCPScript.sh
 ```
 
-## Configurando o Arduino Uno r3 e a ESP01
+## Configuring Arduino Uno r3 and ESP01
 
 Em nosso sistema, o Arduíno Uno é o responsável por realizar a coleta dos dados de telemetria, equanto a ESP01 ficará responsável por mandar a telemetria via MQTT, conectar-se ao Access Point Wi-Fi e conectar-se ao GCP.  
 Para realizar todas essas funções existem duas opções de desenvolvimento. Criar suas próprias bibliotecas de funções ou utilizar as que estão disponíveis na comunidade Arduino.  
