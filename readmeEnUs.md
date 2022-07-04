@@ -1,11 +1,10 @@
-# Internet of the end of world - 4.0 Turnstile 
+# Internet of the end of world - 4.0 Turnstile
 
 Implementation project of 4.0 workshops at [IFRS Campus Caxias do Sul](https://ifrs.edu.br/caxias/).
 
-
 > *~Team Iniciativa Arduino IoT  
->  [Leia isso em Português](./readme.md)  
->  [Lea esto en Español]()* 
+> [Leia isso em Português](./readme.md)  
+> [Lea esto en Español]()*
 
 ## Abstract  
 
@@ -13,7 +12,6 @@ This project uses an Arduino Uno r3 with WiFi esp01 based on the esp8266 chip, G
 
 >***Disclaimer***  
 *This project may incur charges and the authors are not responsible. Do it under your full awareness and read the available material carefully. Have a Good learning experience.*
-
 
 **Overview**
 
@@ -26,23 +24,22 @@ The figure below represents our data flux, with the services used.
 * ESP01 8266
 * GPS Neo 6M
 * LCD 16x2
-* Adapter for ESP01 w/ voltage regulator and logic level shifter 
+* Adapter for ESP01 w/ voltage regulator and logic level shifter
 * Potenciometer 10kOhm
 * Adapter usb-serial ch340 for esp01
 * Jumper Cables
 * 2 push buttons
 * 5v power supply
-* Switch (optional) 
+* Switch (optional)
 * Account on Google Cloud Platform
 * [Node package manager](https://nodejs.org/en/)
 * [Microsoft VSCode](https://code.visualstudio.com/)
 * [Gcloud CLI](https://cloud.google.com/sdk/docs/install)
 
-
 **Table of Contents**
 
 1. [Configuring GCP](#configuring-gcp)
-    
+
     1. [Setup IoT Core](#setup-iot-core)
     2. [Setup Cloud Pub/Sub](#setup-cloud-pubsub)
     3. [Easy way - bash script](#easy-way---script-de-automação)
@@ -63,19 +60,20 @@ The figure below represents our data flux, with the services used.
     4. [Setup cloud functions - Python](#setup-db)
     5. [Testing the cloud function]()
 
-5. [Building the Dashboard](#construção-da-dashboard)
+4. [Building the Dashboard](#construção-da-dashboard)
 
     1. [*find a suitable tool*](#decidir-ferramenta)
 
-6. [Hybrid app integration](#integraçao-com-aplicativo-móvel)
+5. [Hybrid app integration](#integraçao-com-aplicativo-móvel)
 
     1. [Ionic](#desenvolvimento-ionic)
+
 ---
 
 ## Configuring GCP
 
-Google offers many services in various ways. For more billing information on their free tier, click on [this link](https://cloud.google.com/free/docs/gcp-free-tier#free-tier). The configuration can be done utilizing the user interface, called console, or a command line interface as a free service called cloud shell. There is also a script at the end of this section, made for those who know how to execute it and make everything automaticaly. 
-Firstly we need to configure names for our stuff. Copy and paste the variables below on a notepad and fill it with what you find suitable. If you are going to use cloud shell, copy the filled version onto it but don't delete your file, as we are using it troughtout all the development. 
+Google offers many services in various ways. For more billing information on their free tier, click on [this link](https://cloud.google.com/free/docs/gcp-free-tier#free-tier). The configuration can be done utilizing the user interface, called console, or a command line interface as a free service called cloud shell. There is also a script at the end of this section, made for those who know how to execute it and make everything automaticaly.
+Firstly we need to configure names for our stuff. Copy and paste the variables below on a notepad and fill it with what you find suitable. If you are going to use cloud shell, copy the filled version onto it but don't delete your file, as we are using it troughtout all the development.
 
 ```shell
 export PROJECT_ID=      #fill with your project name
@@ -85,34 +83,42 @@ export SUBSCRIPTION=    #name of your pubsub subscription
 export REGISTRY=        #name of your iot core regitry
 export DEVICE_ID=       #iot device id
 ```
+
 With everything on hand we can go to the next step. Create a project utilizing your **PROJECT_ID** and be sure to check if billing is activated, otherwise you will be prevente from proceeding when deploying any kind of service. To do that go to google cloud console and search for "billing" in the search bar.
 
 To activate the necessary services, go to the menu at your top-left and find "APIs". Click on "add services and APIs", and then search and activate the following **IoT core, Pub/Sub, and Cloud Functions. If you are using shell, paste the following:
+
 ```shell
 gcloud services enable cloudiot.googleapis.com pubsub.googleapis.com cloudfunctions.googleapis.com
 ```  
+
 Before setting up the services, you need to create a service account to give IoT Core the permissions to publish into a Pub/Sub Topic. Search for "IAM & Admin" and when inside IAM, press "Add". On the first field, insert the following email *cloud-iot@system.gserviceaccount.com* and on the field "Function" search for **Cloud PUB/SUB Publish** and then hit save. If you are using shell, this will do it:
+
 ```shell
 gcloud projects add-iam-policy-binding $PROJECT_ID \
     --member=serviceAccount:cloud-iot@system.gserviceaccount.com \
     --role=roles/pubsub.publisher
 ```  
+
 To proceed, one will need an eliptic curve key pair with 256bits to authenticate the device. Now, it's easier to use cloud shell for that:
+
 ```shell
 openssl ecparam -genkey -name prime256v1 -noout -out ec_private.pem
 openssl ec -in ec_private.pem -pubout -out ec_public.pem
 ```
-This will create two keys and save them in the cloud editor. Open the editor and find your keys. Open them, copy and paste into a temporary file for later. If you are using the shell you don't need to do this. 
+
+This will create two keys and save them in the cloud editor. Open the editor and find your keys. Open them, copy and paste into a temporary file for later. If you are using the shell you don't need to do this.
 
 >***Important***  
 >**Don't share your keys with anyone. This represents a security risk to the integrity of your project.**  
+
 ### Setup Cloud Pub/Sub  
 
 **Utilizando os menus**  
-Para criar um [PUB/SUB](https://cloud.google.com/pubsub), pesquise na caixa do GCP por "Pub/Sub" ou role o menu em sanduíche até encontrar o serviço. Sua tela provavelmente estará em branco, então aperte no botão "Criar um Tópico". No novo menu que aparecerá, em "ID do tópico", coloque o nome definido anteriormente em **TOPIC_ID** e crie seu tópico. Após a mensagem de que o tópico foi criado com sucesso, no menu da esquerda vá em "Subescrições" e selecione "Criar Subescrição". Na nova tela aberta, coloque o nome que definiu em **SUBSCRITION** e selecione o nome do tópico que foi criado na etapa anterior. Aceite os valores pré-selecionados e crie a subescrição. 
-
+To create a [PUB/SUB](https://cloud.google.com/pubsub), topic, in the GCP searchbox look for "Pub/Sub". You can also scroll until you find the service on the left-hand menu. Tap the button "Create topic". In the new window, fill in the "Topic ID" box with whatever you defined as **TOPIC_ID** and hit create. It might take a short while but a message will say when your topic has been created. Now go to "Subscriptions" and press "Create Subscription". In the new opened window, type in the name that you chose as **SUBSCRITION** and select the topic that we just created. Accept all default values and press Create.
 **Utilizando o Shell**  
-Para criar o IoT Core utilizando o shell, siga os seguintes comandos:  
+If you want to use the google shell, paste the following:  
+
 ```shell
 gcloud iot registries create $REGISTRY \
     --region=$REGION \
@@ -127,13 +133,16 @@ To create a [IoT Core](https://cloud.google.com/blog/topics/developers-practitio
 
 **Using Shell**  
 To create an IoT Core using shell:  
+
 ```shell
 gcloud iot registries create $REGISTRY \
     --region=$REGION \
     --event-notification-config=topic=$TOPIC_ID \
     --enable-mqtt-config --enable-http-config
  ```
+
 To create a device:  
+
 ```shell
 gcloud iot devices create $DEVICE_ID \
     --region=$REGION \
@@ -144,6 +153,7 @@ gcloud iot devices create $DEVICE_ID \
 ### Easy way - bash script
 
 We made a shell script to make it easy to deploy all of the above infrastructure. Don't forget to modify it to suit your needs. Download it [here](./GCP/GCPScript.sh), and open **cloud shell**. Now open editor and hit "upload file". To run it:
+
 ```shell
 ./GCPScript.sh
 ```
@@ -152,8 +162,7 @@ We made a shell script to make it easy to deploy all of the above infrastructure
 
 Em nosso sistema, o Arduíno Uno é o responsável por realizar a coleta dos dados de telemetria, equanto a ESP01 ficará responsável por mandar a telemetria via MQTT, conectar-se ao Access Point Wi-Fi e conectar-se ao GCP.  
 Para realizar todas essas funções existem duas opções de desenvolvimento. Criar suas próprias bibliotecas de funções ou utilizar as que estão disponíveis na comunidade Arduino.  
-A complexidade do projeto implicou na utilização de bibliotecas para otimizar o desenvolvimento do código de forma confiável. 
-
+A complexidade do projeto implicou na utilização de bibliotecas para otimizar o desenvolvimento do código de forma confiável.
 
 ### Instalando as bibliotecas na arduino IDE
 
@@ -162,7 +171,8 @@ Como vamos realizar a programação da ESP01 no mesmo formato do Arduino UNO, pr
 ```
 https://arduino.esp8266.com/stable/package_esp8266com_index.json
 ```
-Após dar um ok, vá em ferramentas, placa e Gerenciador de Placas. Na nova janela que abrir, procure por esp8266 por esp8266 community e instale. Agora, toda a vez que quiser programar para a ESP01, vá no mesmo menu de placas, vá em esp8266 e procure por esp8266 generic module. 
+
+Após dar um ok, vá em ferramentas, placa e Gerenciador de Placas. Na nova janela que abrir, procure por esp8266 por esp8266 community e instale. Agora, toda a vez que quiser programar para a ESP01, vá no mesmo menu de placas, vá em esp8266 e procure por esp8266 generic module.
 
 ![ESP01Menu](./Assets/ESP01Menu.png)  
 
@@ -178,7 +188,6 @@ Para instalar as bibliotecas necessárias, va em skecth > incluir bibliotecas > 
 
 Se durante a instalação de alguma biblioteca uma mensagem de pop-up pedir a instalação de módulos extra, permita que sejam instalados.
 
-
 ### Fluxograma de código - Arduino UNO
 
 No presente projeto, o Arduíno Uno funciona como um agregador de informação sensorial. Se algum botão foi pressionado durante o ciclo, o Uno busca definir qual botão foi pressionado para inserir em um *struct* que já contém as informações de GPS e é enviado para a ESP01 por uma porta Software Serial. O digrama de blocos fica da seguinte forma:
@@ -187,28 +196,25 @@ No presente projeto, o Arduíno Uno funciona como um agregador de informação s
 </p>
 A versão explodida do loop() pode ser encontrada [aqui](/Assets/MainLoopExplodedPTBr.svg) caso mais detalhes sejam necessários. O código pode ser encontrado [aqui](/BoardPrograms/Uno/).
 
-
 ### Fluxograma de código - ESP01
 
 O programa da ESP01 é relativamente mais simples. Quando o arduino Uno envia uma mensagem, a ESP01 aciona uma função que cria uma string no formato .JSON e envia para o PUB/SUB. A string tem o formato:
 
 ```json
  { 
-    "latitude": float,
-    "longitude": float,
-    "HDOP": long,
-    "Altitude": float, 
-    "Course": float,
-    "Speed": float, 
-    "NumSat": short, 
-    "Date": long,
-    "Time": long,
-    "fixAge": long,
-    "Entrance": long,
-    "Exit": long,
+    "latitude": 0.0000,
+    "longitude": 0.0000,
+    "HDOP": 0.0000,
+    "Altitude": 0.0000, 
+    "Course": 0.0000,
+    "Speed": 0.0000, 
+    "NumSat": 0, 
+    "Entrance": 0,
+    "Exit": 0,
  }
 ```
-O fluxograma de código da ESP01 fica mais simples, como apresentado abaixo e o código pode ser encontrado [aqui](./BoardPrograms/Esp8266-lwmqtt/).   
+
+O fluxograma de código da ESP01 fica mais simples, como apresentado abaixo e o código pode ser encontrado [aqui](./BoardPrograms/Esp8266-lwmqtt/).
 <p align="middle">
 <img src="./Assets/ESP01.svg" height="45%" width="45%" align="center"/>
 </p>
@@ -218,11 +224,11 @@ Vale lembrar que para fazer o upload do código, a ESP01 deve estar em modo de F
 <img src ="./Assets/ESP-8266-ESP-01-Adaptador-USB.jpg" height="35%" width="35%" align="center"/>
 </p>
 
-### Conectando os componentes    
+### Conectando os componentes
 
 O projeto utiliza grande parte das portas digitais do Arduino Uno. O esquema de fiação fica no formato apresentado na imagem abaixo.  
 <p align="middle">
-<img src="./Assets/GY-NEO6MV2_bb.png" height="75%" width="75%"  align="center"/> 
+<img src="./Assets/GY-NEO6MV2_bb.png" height="75%" width="75%"  align="center"/>
 </p>
 Repare que nesta configuração, utilizamos um  conversor de nível logico e um regulador de voltagem pois a ESP01 funciona com 3.3v tanto para os sinais nos pinos quando como VCC. Isso pode ser simplificado com a utilização do adaptador na imagem abaixo.  
 <p align="middle">
@@ -239,7 +245,7 @@ No final, o projeto ficará como na imagem a seguir:
 
 ## Dados, dados e mais dados
 
-Com nosso hardware pronto e funcional, podemos nos preocupar com a funcionalidade do solução de backend, pois até o momento só criamos a infraestrutura. Existem formas de testar o IoT Core, porém isso inclui a utilização de um cliente MQTT na sua máquina, bem como a criação de um dispositivo, um token jwt e uso dos certificados e vai além do escopo. Para mais informações, utilize [este projeto](http://nilhcem.com/iot/cloud-iot-core-with-the-esp32-and-arduino) by @nilhcem, na parte de "connect to http/mqtt bridge". 
+Com nosso hardware pronto e funcional, podemos nos preocupar com a funcionalidade do solução de backend, pois até o momento só criamos a infraestrutura. Existem formas de testar o IoT Core, porém isso inclui a utilização de um cliente MQTT na sua máquina, bem como a criação de um dispositivo, um token jwt e uso dos certificados e vai além do escopo. Para mais informações, utilize [este projeto](http://nilhcem.com/iot/cloud-iot-core-with-the-esp32-and-arduino) by @nilhcem, na parte de "connect to http/mqtt bridge".
 
 ### Verificação do Cloud Pub/Sub
 
@@ -260,7 +266,6 @@ gcloud pubsub subscriptions pull --auto-ack $SUBSCRIPTION --limit=1
 Perfeito. Com nossos dados chegando na nuvem, temos que persistí-los em algum lugar pois o Pub/Sub apaga as mensagens conforme o tempo passa. Para isso vamos criar uma armazenamento no [Firebase](https://firebase.google.com/). Entre no website e faça login com a mesma conta da GCP. Vá em adicionar novo projeto e na hora de selecionar um nome, selecione **PROJECT_ID** igual ao da GCP. Confirme o plano **blaze**, confirme novamente. No passo de Google Analytics, confirme que o switch está em ativado pois precisaremos deste serviço e aperte próximo. Na conta do Google Analytics, selecione a conta padrão e confime, adicionar Firebase.  
 Nosso projeto está configurado no Firebase, porém agora precisamos criar uma database Firestore e habilitar a cloud functions. No menu a esquerda, selecione Firestore Database e clique em criar database. Selecione o modo de teste, clique em próximo e na outra tela escolha uma região mais próxima da **REGION** escolhida para o projeto.
 
-
 ### Setup cloud functions
 
 Para construir nossa função, vamos utilizar o [node package manager](https://nodejs.org/en/), o microsoft [VSCode](https://code.visualstudio.com/) como IDE e precisaremos também do [gcloud CLI](https://cloud.google.com/sdk/docs/install). Utilize os links para instalar e configurar tudo na sua máquina. Em seguida instale os itens do Firebase com o comando:
@@ -268,6 +273,7 @@ Para construir nossa função, vamos utilizar o [node package manager](https://n
 ```shell
 npm install -g firebase-tools
 ```
+
 Agora, crie um diretório para nosso projeto, entre na pasta e inicie um projeto de functions:
 
 ```shell
@@ -275,12 +281,16 @@ mkdir meuProjeto
 cd meuProjeto
 firebase init functions
 ```
+
 Utilize as setas para escolher "Use an existing project", depois selecione o nome do projeto da Google Cloud e, escolha TypeScript. Ainda temos mais umas perguntas para responder. Quando o menu perguntar sobre ESLint digite "n". Quando pergutar "Do you want to install dependencies?" digite "y" e em seguida digite o comando abaixo para abrir o projeto no VSCode
+
 ```
 . code
 ```
+
 Com o projeto aberto no VSCode, va na pasta **src** e abra o arquivo **index.ts**. Agora temos duas opções, é possível copiar e colar o código [deste link](./GCP/TSCloudFunction/index.ts) ou baixar o arquivo e substituir na pasta src. Modificação nas funções é possível para que atenda melhor ao caso de uso.
 Utilize os comandos abaixo para entrar na sua conta da GCP e confirmar que está trabalhando no projeto correto:
+
 ```shell
 gcloud auth login 
 # abrirá o navegador para fazer login
@@ -307,6 +317,7 @@ gcloud pubsub topics publish $TOPIC_ID --message='Catracat02-connected' --attrib
 
 gcloud pubsub topics publish $TOPIC_ID --message='{"Latitude":-29.19,"Longitude":-51.24,"HDOP":159,"Altitude":724.30,"Course":0.00,"Speed":0.00,"NumSat":6,"Date":2012479491,"Time":131006486,"fixAge":0,"Entrance":1,"Exit":0}' --attribute='deviceId=Catraca02'
 ```
+
 Erros e eventos são listados no menu "Functions" na aba heatlh e logs.
 
 ## Construção da dashboard
@@ -316,6 +327,3 @@ Erros e eventos são listados no menu "Functions" na aba heatlh e logs.
 ## Integraçao com aplicativo Móvel
 
 ### Desenvolvimento Ionic
-   
-    
-

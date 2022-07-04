@@ -259,6 +259,7 @@ Para construir nossa função, vamos utilizar o [node package manager](https://n
 ```shell
 npm install -g firebase-tools
 ```
+
 Agora no seu computador, crie um diretório para nosso projeto, entre na pasta e inicie um projeto de functions:
 
 ```shell
