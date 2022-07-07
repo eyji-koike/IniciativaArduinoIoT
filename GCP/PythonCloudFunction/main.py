@@ -23,7 +23,7 @@ from firebase_admin import firestore
 from google.cloud import firestore
 
 # now, stantiate what project we are working on
-client = firestore.Client(project='Insert your Project ID Here')
+client = firestore.Client(project='NameOfYourProject')
 
 
 # here we define the name of our function. This has to be the same when we deploy the function throught command line
@@ -34,10 +34,7 @@ def pubsub_fire(event, context):
     # if there is data in the event, we decode it. Otherwise, we display hello world
     if 'data' in event:
         name = base64.b64decode(event['data']).decode('utf-8')
-    else:
-        name = 'World'
-    # here we display that message in the console
-    print(f'Hello {name}!')
+
     # here we search for the keyword -connected in 'name' to see if the message was a telemetry or just a connection
     if re.search("-connected", name) is not None:
         # if it was a connection, we route to our 'stats' collection
@@ -59,8 +56,7 @@ def pubsub_fire(event, context):
         # then we set how our document will loook like
         doc.set(
             {
-                "Latitude": data["Latitude"],
-                "Longitude": data["Longitude"],
+                "Geo": [data["Latitude"], data["Longitude"]],
                 "HDOP": data["HDOP"],
                 "Altitude": data["Altitude"],
                 "Course": data["Course"],
@@ -71,4 +67,11 @@ def pubsub_fire(event, context):
                 "DeviceID": context.resource["name"],
                 "Timestamp": context.timestamp
             }
+        )
+        doc = client.collection('lastLoc').document(context.resource["name"])
+        doc.set(
+            {
+                "Geo": [data["Latitude"], data["Longitude"]],
+                "Timestamp": context.timestamp
+             }
         )
