@@ -23,7 +23,7 @@ from firebase_admin import firestore
 from google.cloud import firestore
 
 # now, stantiate what project we are working on
-client = firestore.Client(project='NameOfYourProject')
+client = firestore.Client(project='arduinoiotbackend')
 
 
 # here we define the name of our function. This has to be the same when we deploy the function throught command line
@@ -32,8 +32,7 @@ def pubsub_fire(event, context):
     print(
         f'This function was triggered by messageId {context.event_id}, published at {context.timestamp} to {context.resource["name"]}!')
     # if there is data in the event, we decode it. Otherwise, we display hello world
-    if 'data' in event:
-        name = base64.b64decode(event['data']).decode('utf-8')
+    name = base64.b64decode(event['data']).decode('utf-8')
 
     # here we search for the keyword -connected in 'name' to see if the message was a telemetry or just a connection
     if re.search("-connected", name) is not None:
@@ -51,6 +50,7 @@ def pubsub_fire(event, context):
     else:
         # if it wasn't a connection, we have to be able to read it as a JSON
         data = json.loads(name)
+        attributes = event["attributes"]
         # and we have to route it to the propper collection
         doc = client.collection('catracaData').document()
         # then we set how our document will loook like
@@ -64,11 +64,12 @@ def pubsub_fire(event, context):
                 "NumSat": data["NumSat"],
                 "Entrance": data["Entrance"],
                 "Exit": data["Exit"],
-                "DeviceID": context.resource["name"],
+                "DeviceID": attributes["deviceId"],
                 "Timestamp": context.timestamp
             }
         )
-        doc = client.collection('lastLoc').document(context.resource["name"])
+        docId = str(attributes["deviceId"]).lower()
+        doc = client.collection('lastLoc').document(document_id=docId)
         doc.set(
             {
                 "Geo": [data["Latitude"], data["Longitude"]],
