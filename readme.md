@@ -326,7 +326,7 @@ gcloud pubsub topics publish $TOPIC_ID --message='Catracat02-connected' --attrib
 
 # ou
 
-gcloud pubsub topics publish $TOPIC_ID --message='{"Latitude":-29.19,"Longitude":-51.24,"HDOP":159,"Altitude":724.30,"Course":0.00,"Speed":0.00,"NumSat":6,"Date":2012479491,"Time":131006486,"fixAge":0,"Entrance":1,"Exit":0}' --attribute='deviceId=Catraca02'
+gcloud pubsub topics publish $TOPIC_ID --message='{"Latitude":-29.19,"Longitude":-51.24,"HDOP":159,"Altitude":724.30,"Course":0.00,"Speed":0.00,"NumSat":6,"Entrance":1,"Exit":0}' --attribute='deviceId=Catraca02'
 ```
 Erros e eventos são listados no menu "Functions" na aba heatlh e logs.
 
