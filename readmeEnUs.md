@@ -160,19 +160,18 @@ We made a shell script to make it easy to deploy all of the above infrastructure
 
 ## Configuring Arduino Uno r3 and ESP01
 
-Em nosso sistema, o Arduíno Uno é o responsável por realizar a coleta dos dados de telemetria, equanto a ESP01 ficará responsável por mandar a telemetria via MQTT, conectar-se ao Access Point Wi-Fi e conectar-se ao GCP.  
-Para realizar todas essas funções existem duas opções de desenvolvimento. Criar suas próprias bibliotecas de funções ou utilizar as que estão disponíveis na comunidade Arduino.  
-A complexidade do projeto implicou na utilização de bibliotecas para otimizar o desenvolvimento do código de forma confiável.
+In this system the Arduino Uno is responsible for collecting the telemetry data, whereas the ESP01 will be responsible for sending the telemetry throught MQTT, connecting to the Wi-Fi Access Point and to GCP.  
+There are two approaches to deal all inputs. We can build our own libraries or utilize the ones available. In this project we are using a bunch of libraries that can certainly do a solid job.
 
-### Instalando as bibliotecas na arduino IDE
+### Installing Libraries in Arduino IDE
 
-Como vamos realizar a programação da ESP01 no mesmo formato do Arduino UNO, precisamos fazer a Arduino IDE reconhecer a placa. Abra a Arduino IDE e vá em preferências. No campo "gerenciador de placas adicionais", insira o link abaixo:
+To program the ESP01 we need to make the IDE recognize it. On the field "manage additional boards", input the following link:
 
 ```
 https://arduino.esp8266.com/stable/package_esp8266com_index.json
 ```
 
-Após dar um ok, vá em ferramentas, placa e Gerenciador de Placas. Na nova janela que abrir, procure por esp8266 por esp8266 community e instale. Agora, toda a vez que quiser programar para a ESP01, vá no mesmo menu de placas, vá em esp8266 e procure por esp8266 generic module.
+Hit ok and go to tools > board > Boards Manager. In the new window, search for esp8266 community. You will need to do this every time to flash the esp8266. 
 
 ![ESP01Menu](./Assets/ESP01Menu.png)  
 
