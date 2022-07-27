@@ -52,7 +52,7 @@ The figure below represents our data flux, with the services used.
     4. [Wiring](#conectando-os-componentes)  
     5. [Final assembly](#montagem-final)
 
-3. [Data, data, and more data](#testando-a-transferência-de-dados)
+3. [Data, data, and more data](#data-data-and-more-data)
 
     1. [Review Cloud Pub/Sub](#verificação-do-cloud-pubsub)
     2. [Setup Firebase](#routing-e-armazenamento-de-dados)
@@ -175,7 +175,7 @@ Hit ok and go to tools > board > Boards Manager. In the new window, search for e
 
 ![ESP01Menu](./Assets/ESP01Menu.png)  
 
-Para instalar as bibliotecas necessárias, va em skecth > incluir bibliotecas > gerenciar bibliotecas. Na janela que abrir, precisamos instalar as seguinte lista:
+To add the libraries go to menu > add libraries > manage libraries. Install the following:
 
 1. LiquidCrystal by Arduino
 2. WifiESP by Bruno Portaluri
@@ -185,19 +185,19 @@ Para instalar as bibliotecas necessárias, va em skecth > incluir bibliotecas > 
 6. Google Cloud IoT Core JWT by Guss Class
 7. DailyStruggleButton by cygig
 
-Se durante a instalação de alguma biblioteca uma mensagem de pop-up pedir a instalação de módulos extra, permita que sejam instalados.
+During the installation, a pop-up message may ask to install dependent libraries, allow it.
 
-### Fluxograma de código - Arduino UNO
+### Block Diagram - Arduino UNO
 
-No presente projeto, o Arduíno Uno funciona como um agregador de informação sensorial. Se algum botão foi pressionado durante o ciclo, o Uno busca definir qual botão foi pressionado para inserir em um *struct* que já contém as informações de GPS e é enviado para a ESP01 por uma porta Software Serial. O digrama de blocos fica da seguinte forma:
+In this project the arduino Uno works agreggating sensorial information. If a button was pressed, the Uno identifies which one was pressed and insert the information into a *struct* that has the already polled GPS information, and sends it to the ESP01 throught Software Serial. The block Diagram will likely be the following:
 <p align="middle">
 <img src="./Assets/Fluxograma.svg" height="75%" width="75%" align="center"/>
 </p>
-A versão explodida do loop() pode ser encontrada [aqui](/Assets/MainLoopExplodedPTBr.svg) caso mais detalhes sejam necessários. O código pode ser encontrado [aqui](/BoardPrograms/Uno/).
+The exploded version can be found [here](/Assets/MainLoopExplodedPTBr.svg). THe code can be found [here](/BoardPrograms/Uno/).
 
-### Fluxograma de código - ESP01
+### Block Diagram - ESP01
 
-O programa da ESP01 é relativamente mais simples. Quando o arduino Uno envia uma mensagem, a ESP01 aciona uma função que cria uma string no formato .JSON e envia para o PUB/SUB. A string tem o formato:
+The ESP01 program is a little simpler. When the Uno sends a message, the ESP01 creates a .JSON and send it to PUB/SUB. The message format is:
 
 ```json
  { 
@@ -213,36 +213,36 @@ O programa da ESP01 é relativamente mais simples. Quando o arduino Uno envia um
  }
 ```
 
-O fluxograma de código da ESP01 fica mais simples, como apresentado abaixo e o código pode ser encontrado [aqui](./BoardPrograms/Esp8266-lwmqtt/).
+The block diagram can be found below and the code can be found [here](./BoardPrograms/Esp8266-lwmqtt/).
 <p align="middle">
 <img src="./Assets/ESP01.svg" height="45%" width="45%" align="center"/>
 </p>
-Vale lembrar que para fazer o upload do código, a ESP01 deve estar em modo de Flash. Para conseguir isso, o pino GPIO00 deve estar conectado ao GND quando a placa é conectada a enegia. Sugerimos a adição de uma fiação com interruptor entre os pinos GND e GPIO00 para facilitar o momento de programar a ESP01 como representado simplisticamente na figura a esquerda. Outra ferramenta que facilita bastante e foi utilizada neste projeto é o adaptador usb ch340 para esp01, mostrado na figura a direita.  
+**Remainder**, the ESP01 must be in Flash mode. To achieve this, the GPIO00 pin must be connected to GND when the board is booted up. We suggest the addtion of a switch between the GND and GPIO00 pins to make it easier to upload to the ESP01, as represented on the figure below to the left. Another tool used in this project is the usb ch340 adaptor to esp01, shown below to the left.  
 <p align="middle">
 <img src="./Assets/Esp01FlashMode.png" height="30%" width="30%" align="center"/>
 <img src ="./Assets/ESP-8266-ESP-01-Adaptador-USB.jpg" height="35%" width="35%" align="center"/>
 </p>
 
-### Conectando os componentes
+### Conecting the components
 
-O projeto utiliza grande parte das portas digitais do Arduino Uno. O esquema de fiação fica no formato apresentado na imagem abaixo.  
+Almost all the Arduino pins are used in this project. The wiring will look like the following:  
 <p align="middle">
 <img src="./Assets/GY-NEO6MV2_bb.png" height="75%" width="75%"  align="center"/>
 </p>
-Repare que nesta configuração, utilizamos um  conversor de nível logico e um regulador de voltagem pois a ESP01 funciona com 3.3v tanto para os sinais nos pinos quando como VCC. Isso pode ser simplificado com a utilização do adaptador na imagem abaixo.  
+Please pay attention that on the eletrical drawing we used a voltage-level-shifter because esp01 works with 3.3v. This can be simplified with the adaptor shown below:  
 <p align="middle">
 <img src="./Assets/sku_404644_1.jpg" height="35%" width="35%" align="center"/>
 </p>
 
-### Montagem Final
+### Final assembly
 
-No final, o projeto ficará como na imagem a seguir:
+At the end your project will look like the following:
 <p align="middle">
 <img src="./Assets/Vis%C3%A3oSuperior.jpeg" height="51%" width="51%" align="center"/>
 <img src="./Assets/Vis%C3%A3oFrontal.jpeg" height="38%" width="38%" align="center"/>
 </p>
 
-## Dados, dados e mais dados
+## Data, data and more data
 
 Com nosso hardware pronto e funcional, podemos nos preocupar com a funcionalidade do solução de backend, pois até o momento só criamos a infraestrutura. Existem formas de testar o IoT Core, porém isso inclui a utilização de um cliente MQTT na sua máquina, bem como a criação de um dispositivo, um token jwt e uso dos certificados e vai além do escopo. Para mais informações, utilize [este projeto](http://nilhcem.com/iot/cloud-iot-core-with-the-esp32-and-arduino) by @nilhcem, na parte de "connect to http/mqtt bridge".
 
