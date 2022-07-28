@@ -12,3 +12,6 @@ GCP/PythonCloudFunction/.idea/inspectionProfiles/Project_Default.xml
 .DS_Store
 GCP/PythonCloudFunction/env/lib/python3.10/site-packages/__pycache__/six.cpython-310.pyc
 .DS_Store
+StreamlitApp/arduinoiotbackend-firebase-adminsdk-yblvj-ad9d029cb5.json
+.DS_Store
+StreamlitApp/.streamlit/secrets.toml

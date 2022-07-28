@@ -1,0 +1,12 @@
+[theme]
+primaryColor="#2196f3"
+backgroundColor="#e3f2fd"
+secondaryBackgroundColor="#bbdefb"
+textColor="#252422"
+font="sans serif"
+
+[browser]
+serverAddress = ""
+
+[server]
+port = ""
