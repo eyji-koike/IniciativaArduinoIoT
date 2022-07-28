@@ -1,4 +1,4 @@
-# Smartubus App
+# Smartbus App
 
 This app runs on a container on Cloud Run. You need to setup your secrets as strealit guides [here](https://docs.streamlit.io/streamlit-cloud/get-started/deploy-an-app/connect-to-data-sources/secrets-management).  
 Parse Your GCP Credentials there.... And please ***DO NOT SHARE THEM WITH ANYONE***.  
