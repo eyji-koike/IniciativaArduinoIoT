@@ -42,23 +42,23 @@ The figure below represents our data flux, with the services used.
 
     1. [Setup IoT Core](#setup-iot-core)
     2. [Setup Cloud Pub/Sub](#setup-cloud-pubsub)
-    3. [Easy way - bash script](#easy-way---script-de-automação)
+    3. [Easy way - bash script](#easy-way---bash-script)
 
-2. [Configuring Arduino Uno r3 and ESP01](#configurando-o-arduino-uno-r3-e-a-esp01)
+2. [Configuring Arduino Uno r3 and ESP01](#configuring-arduino-uno-r3-and-esp01)
 
-    1. [Installing arduino IDE libraries](#instalando-as-bibliotecas-na-arduino-ide)
-    2. [Arduino Uno code block](#fluxograma-de-código---arduino-uno)
-    3. [ESP01 code block](#fluxograma-de-código---esp01)
-    4. [Wiring](#conectando-os-componentes)  
-    5. [Final assembly](#montagem-final)
+    1. [Installing arduino IDE libraries](#installing-libraries-in-arduino-ide)
+    2. [Arduino Uno block-diagram](#block-diagram---arduino-uno)
+    3. [ESP01 block-diagram](#block-diagram---esp01)
+    4. [Wiring](#conecting-the-components)  
+    5. [Final assembly](#final-assembly)
 
 3. [Data, data, and more data](#data-data-and-more-data)
 
-    1. [Review Cloud Pub/Sub](#verificação-do-cloud-pubsub)
-    2. [Setup Firebase](#routing-e-armazenamento-de-dados)
-    3. [Setup cloud functions - Typescript](#setup-cloud-functions)
-    4. [Setup cloud functions - Python](#setup-db)
-    5. [Testing the cloud function]()
+    1. [Review Cloud Pub/Sub](#checking-pubsub)
+    2. [Setup Firebase](#setup-firebase)
+    3. [Setup cloud functions - Typescript](#setup-cloud-functions---typescript)
+    4. [Setup cloud functions - Python](#setup-cloud-functions---python)
+    5. [Testing the cloud function](#checking-the-cloud-functions)
 
 4. [Building the Dashboard](#construção-da-dashboard)
 
@@ -244,17 +244,17 @@ At the end your project will look like the following:
 
 ## Data, data and more data
 
-Com nosso hardware pronto e funcional, podemos nos preocupar com a funcionalidade do solução de backend, pois até o momento só criamos a infraestrutura. Existem formas de testar o IoT Core, porém isso inclui a utilização de um cliente MQTT na sua máquina, bem como a criação de um dispositivo, um token jwt e uso dos certificados e vai além do escopo. Para mais informações, utilize [este projeto](http://nilhcem.com/iot/cloud-iot-core-with-the-esp32-and-arduino) by @nilhcem, na parte de "connect to http/mqtt bridge".
+With the hardware up and running, now we can worry about the backend. So far, we only deployed the infrastructure. There are many ways we can test the IoT Core, but this requires the installation of Eclipse Mosquitto Client and we are not going over it on this project. For more information [this project](http://nilhcem.com/iot/cloud-iot-core-with-the-esp32-and-arduino) by @nilhcem, on "connect to http/mqtt bridge" can help you.
 
-### Verificação do Cloud Pub/Sub
+### Checking Pub/Sub
 
-Ligue todos os aparelhos. Se tudo estiver certo, ao pressionar um botão o Arduino Uno mostrará a contagem no display, e a luz azul da ESP01 piscará indicando o recebimento da comunicação serial. Para verificarmos se a informação chegou no tópico Pub/Sub, abra o Google Cloud Console e navegue até o serviço Pub/Sub. Clique na ID de tópico que criou e uma nova tela apareçerá. Procure pelo nome da **$SUBSCRIPTION** que criou e clique. Para ver as mensagens, selecione a checkbox "Enable ack messages" e clique em **pull**. Agora poderá verificar se a mensagem chegou com sucesso no tópico. Sua tela paracerá com isso:
+Turn everything on. If everything is correctly setupn and coded, when you press a button the Uno will display the count, and the ESP01's blue light will blink upon received serial data. To verify Pub/Sub, open the Google Cloud Console and navigate to the Pub/Sub service. Click on the topic ID and search for the **$SUBSCRIPTION**. Click on it and, to display the messages select "Enable ack messages" and then **pull**. Your screen will look like:
 
 <p align="middle">
 <img src="./Assets/PubSubTopicMessages.png" align="center"/>
 </p>
 
-Também é possivel utilizar a Cloud Shell. Para isso utilize o código abaixo. Esse comando funciona também na [Google Cloud CLI](https://cloud.google.com/sdk/docs/install-sdk).  
+To do the same, but use the cli [Google Cloud CLI](https://cloud.google.com/sdk/docs/install-sdk) or the shell:  
 
 ```shell
 gcloud pubsub subscriptions pull --auto-ack $SUBSCRIPTION --limit=1
@@ -262,62 +262,93 @@ gcloud pubsub subscriptions pull --auto-ack $SUBSCRIPTION --limit=1
 
 ### Setup Firebase
 
-Perfeito. Com nossos dados chegando na nuvem, temos que persistí-los em algum lugar pois o Pub/Sub apaga as mensagens conforme o tempo passa. Para isso vamos criar uma armazenamento no [Firebase](https://firebase.google.com/). Entre no website e faça login com a mesma conta da GCP. Vá em adicionar novo projeto e na hora de selecionar um nome, selecione **PROJECT_ID** igual ao da GCP. Confirme o plano **blaze**, confirme novamente. No passo de Google Analytics, confirme que o switch está em ativado pois precisaremos deste serviço e aperte próximo. Na conta do Google Analytics, selecione a conta padrão e confime, adicionar Firebase.  
-Nosso projeto está configurado no Firebase, porém agora precisamos criar uma database Firestore e habilitar a cloud functions. No menu a esquerda, selecione Firestore Database e clique em criar database. Selecione o modo de teste, clique em próximo e na outra tela escolha uma região mais próxima da **REGION** escolhida para o projeto.
+If you arrived here, congrats!! Now we can send information anywhere. But, for this project we are going to send it to Firebase as we aim a simpler integration with an App on the future. More info about [Firebase](https://firebase.google.com/). Login into it with the same GCP account. Add a new project and select the name as you created earlier on **PROJECT_ID**. Confirm the we are going to use **blaze**, and confirm  again. When it asks about Google Analytics, confirm that it is activated. For the Google Analytics, select the standard, hit confirm, create Firebase.  
+Now we need to create a Firestore database e enable cloud functions. On the left hand menu, select Firestore Database and hit create database. Select the test mode, click next, chose the region closest to your previosly defined **REGION**.
 
-### Setup cloud functions
+### Setup cloud functions - Typescript
 
-Para construir nossa função, vamos utilizar o [node package manager](https://nodejs.org/en/), o microsoft [VSCode](https://code.visualstudio.com/) como IDE e precisaremos também do [gcloud CLI](https://cloud.google.com/sdk/docs/install). Utilize os links para instalar e configurar tudo na sua máquina. Em seguida instale os itens do Firebase com o comando:
+To build your cloud function we need [node package manager](https://nodejs.org/en/), microsoft [VSCode](https://code.visualstudio.com/) and [gcloud CLI](https://cloud.google.com/sdk/docs/install). Install all of them and then in terminal use the following command:
 
 ```shell
 npm install -g firebase-tools
 ```
 
-Agora, crie um diretório para nosso projeto, entre na pasta e inicie um projeto de functions:
+Now create a new directory and init the firebase funcations:
 
 ```shell
 mkdir meuProjeto
 cd meuProjeto
 firebase init functions
 ```
+>by default Firebase only allows for js functions... we can use python through GCP Cloud functions
 
-Utilize as setas para escolher "Use an existing project", depois selecione o nome do projeto da Google Cloud e, escolha TypeScript. Ainda temos mais umas perguntas para responder. Quando o menu perguntar sobre ESLint digite "n". Quando pergutar "Do you want to install dependencies?" digite "y" e em seguida digite o comando abaixo para abrir o projeto no VSCode
+Use the arrow to choose "Use an existing project", then select the Google Cloud project name, and finally the TypeScript language. When it asks about ESLint type "n". When it asks "Do you want to install dependencies?" type "y" and use the following command to open it on vsCode:
 
 ```
 . code
 ```
 
-Com o projeto aberto no VSCode, va na pasta **src** e abra o arquivo **index.ts**. Agora temos duas opções, é possível copiar e colar o código [deste link](./GCP/TSCloudFunction/index.ts) ou baixar o arquivo e substituir na pasta src. Modificação nas funções é possível para que atenda melhor ao caso de uso.
-Utilize os comandos abaixo para entrar na sua conta da GCP e confirmar que está trabalhando no projeto correto:
+Go to the **src** folder and open the file **index.ts**. Now you can copy and paste [from this link](./GCP/TSCloudFunction/index.ts) or download and replace the file. Feel free to modify it to ensure the best fit for you.
+Now use the following commands:
 
 ```shell
 gcloud auth login 
-# abrirá o navegador para fazer login
+# Web browser login
 
 gcloud projects list 
-# mostra os projetos disponíveis
+# show available projects
 
 gcloud config set project $PROJECT_ID 
-# adiciona o projeto atual (substitua o PROJECT_ID com o nome do projeto)
+# set the default working project
 ```
 
- Para finalizar, vamos utilizar o comando abaixo para fazer upload da nossa função:
+ Now utilize the follwing command to deploy the function:
 
 ```shell
 firebase deploy --only functions
 ```
 
-Para verificar se está tudo correto, pressione alguma das botoeiras novamente ou publique uma mensagem no pubsub como:
+### Setup cloud functions - Python
+
+Our function can also be written in python. To start, find that you have *Cloud Functions* in your terminal. To do so, paste the following:
+
+```shell
+mkdir $PROJECT_ID
+# project name
+
+cd $PROJECT_ID
+# go into that folder
+
+. code
+# open vscode there
+
+```
+
+A Cloud Function needs two files. Create a *main.py* and a *requirements.txt*. Type the follwing in the requirements:
+
+```
+google-cloud-firestore>=2.1.3
+```
+
+Now we can edit *main.py*. Copy and paste, or replace the file from this [link](./GCP/PythonCloudFunction/main.py). Modufy it as you please. Then deploy using:
+
+```shell
+gcloud functions deploy NOME_DA_FUNCAO --runtime python39 --trigger-topic $TOPIC_ID
+```
+
+### Checking the Cloud functions  
+
+To verify that firabse is receiviing our communications, please do the following:
 
 ```shell
 gcloud pubsub topics publish $TOPIC_ID --message='Catracat02-connected' --attribute='deviceId=Catraca02,subFolder=events'
 
-# ou
+# or
 
 gcloud pubsub topics publish $TOPIC_ID --message='{"Latitude":-29.19,"Longitude":-51.24,"HDOP":159,"Altitude":724.30,"Course":0.00,"Speed":0.00,"NumSat":6,"Date":2012479491,"Time":131006486,"fixAge":0,"Entrance":1,"Exit":0}' --attribute='deviceId=Catraca02'
 ```
 
-Erros e eventos são listados no menu "Functions" na aba heatlh e logs.
+Errors and events can be found at heatlh and logs.
 
 ## Construção da dashboard
 
