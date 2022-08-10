@@ -10,8 +10,8 @@ O projeto utiliza uma Arduino Uno r3 com módulos: WiFi esp01 baseado no chip es
 >***Disclaimer***  
 *Esse projeto pode causar cobranças e os autores não são responsáveis. Realize-o sob sua total consiência e leia o material disponível com atenção. Boa aprendizagem.*  
 
-**Demo**
-[Here](./Assets/v1.mp4)  
+**Demo**  
+[Here](./Assets/v1.mov)  
 [And Here](./Assets/demo.mp4)
 
 **Visão Geral**
