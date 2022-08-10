@@ -2,7 +2,7 @@
 # Internet do fim do mundo - Catraca 4.0
 
 Esse projeto faz parte da iniciativa de implementação das oficinas 4.0 no IFRS Campus Caxias do Sul.
->*~Equipe Iniciativa Arduino IoT* @eyji-koike @lu4nn3ry
+>*~Equipe Iniciativa Arduino IoT* @eyji-koike @lu4nn3ry  
 >*[Read this in English](./readmeEnUs.md)*  
 >*[Lea esto en Español]()*  
 ## Abstract
