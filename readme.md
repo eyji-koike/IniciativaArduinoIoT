@@ -8,7 +8,11 @@ Esse projeto faz parte da iniciativa de implementação das oficinas 4.0 no IFRS
 ## Abstract
 O projeto utiliza uma Arduino Uno r3 com módulos: WiFi esp01 baseado no chip esp8266, GPS e dois botões. O protocolo de transmissão utilizado é o **[Mosquito (MQTT)](https://mosquitto.org/)**  e o host para o backend é a **[Google Cloud Platform](https://cloud.google.com/)** com os servicos de [IoT Core](https://cloud.google.com/blog/topics/developers-practitioners/what-cloud-iot-core), e [PUB/SUB](https://cloud.google.com/pubsub). Para nossa solução de retenção de dados, utilizamos um gatilho da [Google Cloud Functions](https://cloud.google.com/functions) que, quando acionado, manda os dados recebidos para o [Google Firebase](https://firebase.google.com/).
 >***Disclaimer***  
-*Esse projeto pode causar cobranças e os autores não são responsáveis. Realize-o sob sua total consiência e leia o material disponível com atenção. Boa aprendizagem.*
+*Esse projeto pode causar cobranças e os autores não são responsáveis. Realize-o sob sua total consiência e leia o material disponível com atenção. Boa aprendizagem.*  
+
+**Demo**
+[Here](./Assets/v1.mp4)  
+[And Here](./Assets/demo.mp4)
 
 **Visão Geral**
 
