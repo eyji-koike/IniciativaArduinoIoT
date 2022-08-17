@@ -10,19 +10,13 @@ O projeto utiliza uma Arduino Uno r3 com módulos: WiFi esp01 baseado no chip es
 >***Disclaimer***  
 *Esse projeto pode causar cobranças e os autores não são responsáveis. Realize-o sob sua total consiência e leia o material disponível com atenção. Boa aprendizagem.*  
 
-**Demo**  
-[Here](./Assets/v1.mov)  
-[And Here](./Assets/demo.mp4)
-<p align="middle">
-<img src="./Assets/Final.gif" height="28%" width="28%" align="center"/><img src="./Assets/App.gif" height="60%" width="60%" align="center"/>
-</p>
 
 **Visão Geral**
 
 O fluxo de informação vai ocorrer como representado na figura abaixo:  
 ![Fluxo de informação](./Assets/InformationFluxogram.png)
 
-**Lista de Materiais**
+**Materiais e Softwares a serem utilizados:**
 
 * Arduino Uno R3
 * ESP01 8266
@@ -30,23 +24,23 @@ O fluxo de informação vai ocorrer como representado na figura abaixo:
 * LCD 16x2
 * Adaptador ESP01 com regulador de voltagem e trocador de nível 
 * Potenciômetro 10kOhm
-* Adaptador usb-serial ch340 para esp01
+* Adaptador USB-SERIAL CH340 para ESP01
 * Cabos jumper
 * 2 botoeiras
 * Fonte de alimentação 5v
-* Interruptor (opicional) 
-* Conta na Google Cloud Platform
-* [Node package manager](https://nodejs.org/en/)
-* [Microsoft VSCode](https://code.visualstudio.com/)
-* [Gcloud CLI](https://cloud.google.com/sdk/docs/install)
+* Interruptor (opcional) 
+* Conta na [Google Cloud Platform](https://cloud.google.com/?hl=pt-br)
+* [Node.js®](https://nodejs.org/)
+* [Visual Studio Code](https://code.visualstudio.com/)
+* [Google Cloud CLI](https://cloud.google.com/sdk/docs/install)
 
 
 **Tabela de conteúdo**
 
-1. [Configurando a GCP](#configurando-a-gcp)
+1. [Configurando Google Cloud Plataform](#configurando-google-cloud-plataform)
     
-    1. [Setup IoT Core](#setup-iot-core)
-    2. [Setup Cloud Pub/Sub](#setup-cloud-pubsub)
+    1. [Configurando IoT Core](#setup-iot-core)
+    2. [Configurando Cloud Pub/Sub](#setup-cloud-pubsub)
     3. [Easy way - script de automação](#easy-way---script-de-automação)
 
 2. [Configurando o Arduino Uno r3 e a ESP01](#configurando-o-arduino-uno-r3-e-a-esp01)
@@ -57,27 +51,26 @@ O fluxo de informação vai ocorrer como representado na figura abaixo:
     4. [Conectando os componentes](#conectando-os-componentes)  
     5. [Montagem Final](#montagem-final)
 
-3. [Dados, dados e mais dados](#dados,-dados-e-mais-dados)
+3. [Inspeção, Verificação e Validação](#dados,-dados-e-mais-dados)
 
     1. [Verificação do Cloud Pub/Sub](#verificação-do-cloud-pubsub)
-    2. [Setup Firebase](#setup-firebase)
-    3. [Setup cloud functions - Typescript](#setup-cloud-functions---typescript)
-    4. [Setup cloud functions - Python](#setup-cloud-functions---python) 
+    2. [Configurando Firebase](#setup-firebase)
+    3. [Configurando Cloud Functions  - Typescript](#setup-cloud-functions---typescript)
+    4. [Configurando Cloud Functions - Python](#setup-cloud-functions---python) 
     5. [Verificando o funcionamento da Cloud Function](#verificando-o-funcionamento-da-cloud-function) 
 
-4. [Construção da dashboard](#construção-da-dashboard)
+4. [Construção do Tableau de bord](#construção-da-dashboard)
 
-    1. [*decidir ferramenta*](#decidir-ferramenta)
+    1. [*WIP*](#decidir-ferramenta)
 
-5. [Integraçao com aplicativo Móvel](#integraçao-com-aplicativo-móvel)
-
-    1. [Desenvolvimento Ionic](#desenvolvimento-ionic)
+5. [Desenvolvimento Ionic](https://github.com/lu4nn3ry/IonicSmartBus/#desenvolvimento-ionic)  
 ---
 
-## Configurando a GCP
+### Configurando Google Cloud Plataform
 
 A Google oferece vários serviços de cloud hosting nas mais variadas modalidades. Para mais informações sobre o free tier, acesse [este link](https://cloud.google.com/free/docs/gcp-free-tier#free-tier). A configuração pode ser feita utilizando os menus, ou utilizando o shell. Há também um script que pode ser adaptado para tornar o provisionamento de estrutura automático.  
-Primeiramente precisamos configar nomes para nossos serviços. Copie e cole as variáveis abaixo no seu bloco de notas, e preencha com o valor que achar adequado para seu projeto. Depois do preenchimento essas variáveis podem ser coladas diretamente no cloud shell, ou você pode utilizá-las como guia para preencher os campos nos menus do Google Cloud Console e demais aplicaçōes durante o projeto.  
+Primeiramente precisamos configar nomes para nossos serviços. Copie e cole as variáveis abaixo no seu bloco de notas, e preencha com o valor que achar adequado para seu projeto. Depois do preenchimento essas variáveis podem ser coladas diretamente no cloud shell, ou você pode utilizá-las como guia para preencher os campos nos menus do Google Cloud Console e demais aplicaçōes durante o projeto.
+
 ```shell
 export PROJECT_ID=      #insira o nome do projeto aqui
 export REGION=          #insira a regiao aqui
@@ -143,14 +136,14 @@ gcloud iot devices create $DEVICE_ID \
     --public-key="path=./ec_public.pem,type=es256"
 ```
 
-### Easy way - script de automação
+### Easy way - Script de Configuração
 
 Disponibilizamos um script shell para facilitar toda o setup da GCP para quem já tem maior afinidade com shell scripts. Não esqueça de modificá-los, substituindo os campos de acordo com suas definições. Baixe o script [aqui](./GCP/GCPScript.sh), abra o **cloud shell**. Em seguida abra o editor, clique em *fazer upload* e escolha seu arquivo. Para rodar digite:
 ```shell
 ./GCPScript.sh
 ```
 
-## Configurando o Arduino Uno r3 e a ESP01
+### Configurando o Arduino Uno r3 e a ESP01
 
 Em nosso sistema, o Arduíno Uno é o responsável por realizar a coleta dos dados de telemetria, equanto a ESP01 ficará responsável por mandar a telemetria via MQTT, conectar-se ao Access Point Wi-Fi e conectar-se ao GCP. Para realizar todas essas funções existem duas opções de desenvolvimento. Criar suas próprias bibliotecas de funções ou utilizar as que estão disponíveis na comunidade Arduino. A complexidade do projeto implicou na utilização de bibliotecas para otimizar o desenvolvimento do código de forma confiável. 
 
@@ -182,9 +175,11 @@ Se durante a instalação de alguma biblioteca uma mensagem de pop-up pedir a in
 ### Fluxograma de código - Arduino Uno
 
 No presente projeto, o Arduíno Uno funciona como um agregador de informação sensorial. Se algum botão foi pressionado durante o ciclo, o Uno busca definir qual botão foi pressionado para inserir em um *struct* que já contém as informações de GPS e é enviado para a ESP01 por uma porta Software Serial. O digrama de blocos fica da seguinte forma:
+
 <p align="middle">
 <img src="./Assets/Fluxograma.svg" height="75%" width="75%" align="center"/>
 </p>
+
 A versão explodida do loop() pode ser encontrada [aqui](/Assets/MainLoopExplodedPTBr.svg) caso mais detalhes sejam necessários. O código pode ser encontrado [aqui](/BoardPrograms/Uno/).
 
 
@@ -234,7 +229,7 @@ No final, o projeto ficará como na imagem a seguir:
 <img src="./Assets/Vis%C3%A3oFrontal.jpeg" height="38%" width="38%" align="center"/>
 </p>
 
-## Dados, dados e mais dados
+### Inspenção, Verificação e Validação
 
 Com nosso hardware pronto e funcional, podemos nos preocupar com a funcionalidade do solução de backend, pois até o momento só criamos a infraestrutura. Existem formas de testar o IoT Core, porém isso inclui a utilização de um cliente MQTT na sua máquina, bem como a criação de um dispositivo, um token jwt e uso dos certificados e vai além do escopo. Para mais informações, utilize [este projeto](http://nilhcem.com/iot/cloud-iot-core-with-the-esp32-and-arduino) by @nilhcem, na parte de "connect to http/mqtt bridge". 
 
@@ -252,16 +247,16 @@ Também é possivel utilizar a Cloud Shell. Para isso utilize o código abaixo. 
 gcloud pubsub subscriptions pull --auto-ack $SUBSCRIPTION --limit=1
 ```
 
-### Setup Firebase
+### Configurando Firebase
 
 Perfeito. Com nossos dados chegando na nuvem, temos que persistí-los em algum lugar pois o Pub/Sub apaga as mensagens conforme o tempo passa. Para isso vamos criar uma armazenamento no [Firebase](https://firebase.google.com/). Entre no website e faça login com a mesma conta da GCP. Vá em adicionar novo projeto e na hora de selecionar um nome, selecione **PROJECT_ID** igual ao da GCP. Confirme o plano **blaze**, confirme novamente. No passo de Google Analytics, confirme que o switch está em ativado pois precisaremos deste serviço e aperte próximo. Na conta do Google Analytics, selecione a conta padrão e confime, adicionar Firebase.  
 
 Nosso projeto está configurado no Firebase, porém agora precisamos criar uma database Firestore e habilitar a cloud functions. No menu a esquerda, selecione Firestore Database e clique em criar database. Selecione o modo de teste, clique em próximo e na outra tela escolha uma região mais próxima da **REGION** escolhida para o projeto.
 
 
-### Setup cloud functions - Typescript
+### Configurando Cloud Functions - Typescript
 
-Para construir nossa função, vamos utilizar o [node package manager](https://nodejs.org/en/), o microsoft [VSCode](https://code.visualstudio.com/) como IDE e precisaremos também do [gcloud CLI](https://cloud.google.com/sdk/docs/install). Utilize os links para instalar e configurar tudo na sua máquina. Em seguida instale os itens do Firebase com o comando:
+Para construir nossa função, vamos utilizar o [NodeJS](https://nodejs.org/en/), o [Visual Studio Code](https://code.visualstudio.com/) como IDE e precisaremos também do [Google Cloud CLI](https://cloud.google.com/sdk/docs/install). Utilize os links para instalar e configurar tudo na sua máquina. Em seguida instale os itens do Firebase com o comando:
 
 ```shell
 npm install -g firebase-tools
@@ -296,7 +291,7 @@ gcloud config set project $PROJECT_ID
 ```shell
 firebase deploy --only functions
 ```
-### Setup cloud functions - Python
+### Configurando Cloud Functions - Python
 
 A função que publica dados no *Firebase* pode ser feita também em python. A função fica mais simples e mais fácil de manter. Para começar, encontre o serviço *Cloud Functions* no console. No seu computador, crie uma pasta para o projeto usando os comandos
 
@@ -339,10 +334,10 @@ Erros e eventos são listados no menu "Functions" na aba heatlh e logs.
 
 ## Construção da dashboard
 
-### *~decidir ferramenta~*
+### Streamlit App  
 
-## Integraçao com aplicativo Móvel
+[Streamlit](./StreamlitApp)  
 
-### Desenvolvimento Ionic
+## Desenvolvimento Ionic
    
     
