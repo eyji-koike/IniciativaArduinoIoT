@@ -63,9 +63,7 @@ O fluxo de informação vai ocorrer como representado na figura abaixo:
 
     1. [*WIP*](#decidir-ferramenta)
 
-5. [Integraçao com Aplicativo Mobile](#integraçao-com-aplicativo-móvel)
-
-    1. [Desenvolvimento Ionic](https://github.com/lu4nn3ry/IonicSmartBus/#desenvolvimento-ionic)
+5. [Desenvolvimento Ionic](https://github.com/lu4nn3ry/IonicSmartBus/#desenvolvimento-ionic)  
 ---
 
 ### Configurando Google Cloud Plataform
@@ -334,11 +332,11 @@ gcloud pubsub topics publish $TOPIC_ID --message='{"Latitude":-29.19,"Longitude"
 ```
 Erros e eventos são listados no menu "Functions" na aba heatlh e logs.
 
-### Construção da dashboard
+## Construção da dashboard
 
-## *~decidir ferramenta~*
+### Streamlit App  
 
-### Integraçao com aplicativo Móvel
+[Streamlit](./StreamlitApp)  
 
 ## Desenvolvimento Ionic
    
