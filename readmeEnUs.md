@@ -8,10 +8,10 @@ Implementation project of 4.0 workshops at [IFRS Campus Caxias do Sul](https://i
 
 ## Abstract  
 
-This project uses an Arduino Uno r3 with WiFi esp01 based on the esp8266 chip, GPS, and two buttons. The transmission protocol used is **[Mosquito (MQTT)](https://mosquitto.org/)** and our backend is made on **[Google Cloud Platform](https://cloud.google.com/)** using the services [IoT Core](https://cloud.google.com/blog/topics/developers-practitioners/what-cloud-iot-core), and [PUB/SUB](https://cloud.google.com/pubsub). For our data retention, we use a [Google Cloud Functions](https://cloud.google.com/functions) that is triggered whenever a new publish PUB/SUB event happens, and sends the received data to [Google Firebase](https://firebase.google.com/).
+This project uses an Arduino Uno r3 paired with an esp01 WiFi board (based on the esp8266 chip), GPS, and two buttons. The transmission protocol used is **[Mosquito (MQTT)](https://mosquitto.org/)** and our backend is made on **[Google Cloud Platform](https://cloud.google.com/)** using the services [IoT Core](https://cloud.google.com/blog/topics/developers-practitioners/what-cloud-iot-core), and [PUB/SUB](https://cloud.google.com/pubsub). For our data retention, we use a [Google Cloud Functions](https://cloud.google.com/functions) that is triggered whenever a new publish PUB/SUB event happens, and sends the received data to [Google Firebase](https://firebase.google.com/).
 
 >***Disclaimer***  
-*This project may incur charges and the authors are not responsible. Do it under your full awareness and read the available material carefully. Have a Good learning experience.*
+*This project may incur charges and the authors are not responsible. Do it under your full awareness and read the available material carefully to avoid suprises. Have a Good learning experience.*
 
 **Overview**
 
@@ -25,7 +25,7 @@ The figure below represents our data flux, with the services used.
 * GPS Neo 6M
 * LCD 16x2
 * Adapter for ESP01 w/ voltage regulator and logic level shifter
-* Potenciometer 10kOhm
+* Potentiometer 10kOhm
 * Adapter usb-serial ch340 for esp01
 * Jumper Cables
 * 2 push buttons
@@ -72,7 +72,8 @@ The figure below represents our data flux, with the services used.
 
 ## Configuring GCP
 
-Google offers many services in various ways. For more billing information on their free tier, click on [this link](https://cloud.google.com/free/docs/gcp-free-tier#free-tier). The configuration can be done utilizing the user interface, called console, or a command line interface as a free service called cloud shell. There is also a script at the end of this section, made for those who know how to execute it and make everything automaticaly.
+Google offers many services in various ways. For more billing information on their free tier, click on [this link](https://cloud.google.com/free/docs/gcp-free-tier#free-tier).  
+The configuration can be done utilizing the user interface, called console, or a command line interface as a free service called cloud shell. There is also a script at the end of this section, made for those who know how to execute it and make everything automaticaly.  
 Firstly we need to configure names for our stuff. Copy and paste the variables below on a notepad and fill it with what you find suitable. If you are going to use cloud shell, copy the filled version onto it but don't delete your file, as we are using it troughtout all the development.
 
 ```shell
@@ -84,9 +85,9 @@ export REGISTRY=        #name of your iot core regitry
 export DEVICE_ID=       #iot device id
 ```
 
-With everything on hand we can go to the next step. Create a project utilizing your **PROJECT_ID** and be sure to check if billing is activated, otherwise you will be prevente from proceeding when deploying any kind of service. To do that go to google cloud console and search for "billing" in the search bar.
+With everything prepared we can go to the next step. Create a project utilizing your **PROJECT_ID** and be sure to check if billing is activated, otherwise you will be prevente from proceeding when deploying any kind of service. To do that go to google cloud console and search for "billing" in the search bar.
 
-To activate the necessary services, go to the menu at your top-left and find "APIs". Click on "add services and APIs", and then search and activate the following **IoT core, Pub/Sub, and Cloud Functions. If you are using shell, paste the following:
+To activate the necessary services, go to the menu at your top-left and find "APIs". Click on "add services and APIs", and then search and activate the following **IoT core, Pub/Sub, and Cloud Functions**. If you are using shell, paste the following:
 
 ```shell
 gcloud services enable cloudiot.googleapis.com pubsub.googleapis.com cloudfunctions.googleapis.com
@@ -107,7 +108,7 @@ openssl ecparam -genkey -name prime256v1 -noout -out ec_private.pem
 openssl ec -in ec_private.pem -pubout -out ec_public.pem
 ```
 
-This will create two keys and save them in the cloud editor. Open the editor and find your keys. Open them, copy and paste into a temporary file for later. If you are using the shell you don't need to do this.
+This will create two keys and save them in the cloud editor. Open the editor and find your keys. Open it, copy and paste into a temporary file for later. If you are using the shell you don't need to do this.
 
 >***Important***  
 >**Don't share your keys with anyone. This represents a security risk to the integrity of your project.**  
@@ -115,7 +116,7 @@ This will create two keys and save them in the cloud editor. Open the editor and
 ### Setup Cloud Pub/Sub  
 
 **Utilizando os menus**  
-To create a [PUB/SUB](https://cloud.google.com/pubsub), topic, in the GCP searchbox look for "Pub/Sub". You can also scroll until you find the service on the left-hand menu. Tap the button "Create topic". In the new window, fill in the "Topic ID" box with whatever you defined as **TOPIC_ID** and hit create. It might take a short while but a message will say when your topic has been created. Now go to "Subscriptions" and press "Create Subscription". In the new opened window, type in the name that you chose as **SUBSCRITION** and select the topic that we just created. Accept all default values and press Create.
+To create a [PUB/SUB](https://cloud.google.com/pubsub) topic, go to the GCP searchbox look for "Pub/Sub". You can also scroll until you find the service on the left-hand menu. Tap the button "Create topic". In the new window, fill in the "Topic ID" box with whatever you defined as **TOPIC_ID** and hit create. It might take a short while but a message will say when your topic has been created. Now go to "Subscriptions" and press "Create Subscription". In the new opened window, type in the name that you chose as **SUBSCRITION** and select the topic that we just created. Accept all default values and press Create.
 **Utilizando o Shell**  
 If you want to use the google shell, paste the following:  
 
@@ -160,8 +161,8 @@ We made a shell script to make it easy to deploy all of the above infrastructure
 
 ## Configuring Arduino Uno r3 and ESP01
 
-In this system the Arduino Uno is responsible for collecting the telemetry data, whereas the ESP01 will be responsible for sending the telemetry throught MQTT, connecting to the Wi-Fi Access Point and to GCP.  
-There are two approaches to deal all inputs. We can build our own libraries or utilize the ones available. In this project we are using a bunch of libraries that can certainly do a solid job.
+In this system, the Arduino Uno bpoard is responsible for collecting telemetry data from the sensors and inputs. Whereas, the ESP01 will be responsible for sending the telemetry throught MQTT, connecting to the Wi-Fi Access Point and to GCP.  
+There are two approaches to work with all the sensors and inputs. We can build our own libraries to make them work or utilize the ones available in the Arduino community. In this project we opt for the latter, as they can certainly do a solid job and reduce our workload.
 
 ### Installing Libraries in Arduino IDE
 
@@ -191,7 +192,7 @@ During the installation, a pop-up message may ask to install dependent libraries
 
 In this project the arduino Uno works agreggating sensorial information. If a button was pressed, the Uno identifies which one was pressed and insert the information into a *struct* that has the already polled GPS information, and sends it to the ESP01 throught Software Serial. The block Diagram will likely be the following:
 <p align="middle">
-<img src="./Assets/Fluxograma.svg" height="75%" width="75%" align="center"/>
+<img src="./Assets/FluxogramaENUS.svg" height="75%" width="75%" align="center"/>
 </p>
 The exploded version can be found [here](/Assets/MainLoopExplodedPTBr.svg). THe code can be found [here](/BoardPrograms/Uno/).
 
@@ -215,7 +216,7 @@ The ESP01 program is a little simpler. When the Uno sends a message, the ESP01 c
 
 The block diagram can be found below and the code can be found [here](./BoardPrograms/Esp8266-lwmqtt/).
 <p align="middle">
-<img src="./Assets/ESP01.svg" height="45%" width="45%" align="center"/>
+<img src="./Assets/ESP01ENUS.svg" height="45%" width="45%" align="center"/>
 </p>
 **Remainder**, the ESP01 must be in Flash mode. To achieve this, the GPIO00 pin must be connected to GND when the board is booted up. We suggest the addtion of a switch between the GND and GPIO00 pins to make it easier to upload to the ESP01, as represented on the figure below to the left. Another tool used in this project is the usb ch340 adaptor to esp01, shown below to the left.  
 <p align="middle">
@@ -244,11 +245,11 @@ At the end your project will look like the following:
 
 ## Data, data and more data
 
-With the hardware up and running, now we can worry about the backend. So far, we only deployed the infrastructure. There are many ways we can test the IoT Core, but this requires the installation of Eclipse Mosquitto Client and we are not going over it on this project. For more information [this project](http://nilhcem.com/iot/cloud-iot-core-with-the-esp32-and-arduino) by @nilhcem, on "connect to http/mqtt bridge" can help you.
+With the hardware up and running, now we can worry about the backend. So far, we only deployed the infrastructure. There are many ways we can test the IoT Core, but this requires the installation of Eclipse Mosquitto Client and it's out of the scope of this project. For more information [this project](http://nilhcem.com/iot/cloud-iot-core-with-the-esp32-and-arduino) by @nilhcem, on "connect to http/mqtt bridge" can help you.
 
 ### Checking Pub/Sub
 
-Turn everything on. If everything is correctly setupn and coded, when you press a button the Uno will display the count, and the ESP01's blue light will blink upon received serial data. To verify Pub/Sub, open the Google Cloud Console and navigate to the Pub/Sub service. Click on the topic ID and search for the **$SUBSCRIPTION**. Click on it and, to display the messages select "Enable ack messages" and then **pull**. Your screen will look like:
+Turn everything on. If everything is correctly setup and coded, when you press a button the Uno will display the count, and the ESP01's blue light will blink upon received serial data. To verify Pub/Sub, open the Google Cloud Console and navigate to the Pub/Sub service. Click on the topic ID and search for the **$SUBSCRIPTION**. Click on it and, to display the messages select "Enable ack messages" and then hit the **pull** button. Your screen will look like this:
 
 <p align="middle">
 <img src="./Assets/PubSubTopicMessages.png" align="center"/>
@@ -262,7 +263,7 @@ gcloud pubsub subscriptions pull --auto-ack $SUBSCRIPTION --limit=1
 
 ### Setup Firebase
 
-If you arrived here, congrats!! Now we can send information anywhere. But, for this project we are going to send it to Firebase as we aim a simpler integration with an App on the future. More info about [Firebase](https://firebase.google.com/). Login into it with the same GCP account. Add a new project and select the name as you created earlier on **PROJECT_ID**. Confirm the we are going to use **blaze**, and confirm  again. When it asks about Google Analytics, confirm that it is activated. For the Google Analytics, select the standard, hit confirm, create Firebase.  
+If you arrived here, congrats!! Now we can send information anywhere. But, for this project we are going to send it to Firebase as we aim a simpler integration with an App on the future. More info about [Firebase](https://firebase.google.com/). Login into it with the same GCP account. Add a new project and select the name as you created earlier on **PROJECT_ID**. Confirm the we are going to use **blaze**, and confirm  again. When it asks about Google Analytics, confirm that it is activated. For the Google Analytics, select the standard, hit confirm, and hit create Firebase.  
 Now we need to create a Firestore database e enable cloud functions. On the left hand menu, select Firestore Database and hit create database. Select the test mode, click next, chose the region closest to your previosly defined **REGION**.
 
 ### Setup cloud functions - Typescript
@@ -276,8 +277,8 @@ npm install -g firebase-tools
 Now create a new directory and init the firebase funcations:
 
 ```shell
-mkdir meuProjeto
-cd meuProjeto
+mkdir myProject
+cd myProject
 firebase init functions
 ```
 >by default Firebase only allows for js functions... we can use python through GCP Cloud functions
@@ -302,7 +303,7 @@ gcloud config set project $PROJECT_ID
 # set the default working project
 ```
 
- Now utilize the follwing command to deploy the function:
+ Now utilize the following command to deploy the function:
 
 ```shell
 firebase deploy --only functions
@@ -338,7 +339,7 @@ gcloud functions deploy NOME_DA_FUNCAO --runtime python39 --trigger-topic $TOPIC
 
 ### Checking the Cloud functions  
 
-To verify that firabse is receiviing our communications, please do the following:
+To verify that firabse is receiving our communications, please do the following:
 
 ```shell
 gcloud pubsub topics publish $TOPIC_ID --message='Catracat02-connected' --attribute='deviceId=Catraca02,subFolder=events'
@@ -350,10 +351,10 @@ gcloud pubsub topics publish $TOPIC_ID --message='{"Latitude":-29.19,"Longitude"
 
 Errors and events can be found at heatlh and logs.
 
-## Construção da dashboard
+## Streamlit Web App  
 
-### *~decidir ferramenta~*
+Here you can find a [Streamlit dashboard](./StreamlitApp/readme.md).
 
-## Integraçao com aplicativo Móvel
 
-### Desenvolvimento Ionic
+## Mobile App
+
