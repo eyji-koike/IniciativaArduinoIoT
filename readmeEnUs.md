@@ -8,6 +8,7 @@ Implementation project of 4.0 workshops at [IFRS Campus Caxias do Sul](https://i
 
 ## Abstract  
 
+The objective of this project is to simulate an IoT Turnstile connected to the cloud. This would broaden fleet management capabilities as well as allowing for the development of machine learning and data analytics over the public transportating usage and scheduling.  
 This project uses an Arduino Uno r3 paired with an esp01 WiFi board (based on the esp8266 chip), GPS, and two buttons. The transmission protocol used is **[Mosquito (MQTT)](https://mosquitto.org/)** and our backend is made on **[Google Cloud Platform](https://cloud.google.com/)** using the services [IoT Core](https://cloud.google.com/blog/topics/developers-practitioners/what-cloud-iot-core), and [PUB/SUB](https://cloud.google.com/pubsub). For our data retention, we use a [Google Cloud Functions](https://cloud.google.com/functions) that is triggered whenever a new publish PUB/SUB event happens, and sends the received data to [Google Firebase](https://firebase.google.com/).
 
 >***Disclaimer***  
